@@ -43,10 +43,22 @@
     z-index: 100;
   }
 
+/* 修正後：構造に一致した正しいCSS */
   .logo {
+    display: flex;
+    align-items: center;
     font-size: 1.5rem;
     font-weight: bold;
     letter-spacing: 0.1em;
+    color: var(--primary-color);
+    text-decoration: none;
+  }
+
+  .logo img {
+    height: 6rem; /* 【これで確実に効きます】文字と同じ高さ（約24px）に縮小 */
+    width: auto;
+    margin-right: 16px;
+    display: block;
   }
 
   /* =========================================
@@ -219,7 +231,7 @@
 
 <header>
   <div class="container logo">
-    <img src="images/logo.jpg" alt="湘南AI企画ロゴ">
+    <img src="images/logo.png" alt="湘南AI企画ロゴ">
     <span>湘南AI企画</span>
   </div>
 </header>
