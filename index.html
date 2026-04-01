@@ -5,9 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>湘南AI企画</title>
 
-<link rel="preload" href="images/main-bg.png" as="image">
-<link rel="preload" href="images/main-bg-sp.png" as="image">
-
 <style>
   :root {
     --primary-color: #ffffff;
@@ -15,10 +12,13 @@
     --text-main: #f8fafc;
     --footer-green: #B4D750;
     
-    /* 消失ライン（ロゴ+社名のすぐ下） */
-    --mask-point-pc: 107px; 
-    --mask-point-sp: 91px;
+    /* 消失ポイント：ロゴ＋社名のすぐ下 */
+    --mask-point: 107px; 
     --footer-height: 50px; 
+  }
+
+  @media (max-width: 1024px) {
+    :root { --mask-point: 91px; }
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -28,77 +28,69 @@
     color: var(--text-main);
     background-color: #14191e;
     overflow-x: hidden;
-    /* iOSのバウンスによる挙動不安定を緩和 */
-    -webkit-overflow-scrolling: touch;
+    margin: 0;
+    /* iOSのバウンスを抑制 */
+    overscroll-behavior-y: none;
   }
 
   /* =========================================
-     【修正】背景画像：ズームさせないための固定配置
+     背景：1枚の不動レイヤー（センター固定）
   ========================================= */
-  #bg-fixed-base {
+  .bg-fixed {
     position: fixed;
-    top: 0; left: 0;
-    width: 100%;
-    height: 100%; /* JSで高さをロックします */
+    top: 0; left: 0; width: 100%; height: 100%;
     z-index: -2;
     background-image: url('images/main-bg.png'); 
     background-size: cover;
     background-position: center center;
     background-repeat: no-repeat;
-    /* モバイルでの再レンダリング負荷を軽減 */
+    /* スマホでのガタつき防止 */
     transform: translateZ(0);
   }
 
   @media (max-width: 1024px) {
-    #bg-fixed-base { background-image: url('images/main-bg-sp.png'); }
+    .bg-fixed { background-image: url('images/main-bg-sp.png'); }
   }
 
   .bg-overlay {
     position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
+    top: 0; left: 0; width: 100%; height: 100%;
     background: rgba(0, 0, 0, 0.6); 
     z-index: -1;
   }
 
   /* =========================================
-     【修正】前面目隠し：跳ね返りで見えないよう「上」に延長
+     ヘッダー ＆ 消失用目隠し
   ========================================= */
-  .header-clipper {
+  header {
     position: fixed;
-    /* 上側に大きく突き出させて隙間を完全に塞ぐ */
-    top: -300px; 
+    top: 0; left: 0; width: 100%;
+    z-index: 100;
+  }
+
+  /* ロゴの下で文字を消すための「背景と同じ」目隠し */
+  .header-guard {
+    position: absolute;
+    top: -500px; /* 上部へのバウンス対策：鉄壁のガード */
     left: 0; width: 100%;
-    /* 消失点(mask-point) + 上の突き出し分(300px) */
-    height: calc(var(--mask-point-pc) + 300px);
-    z-index: 10;
-    
+    height: calc(var(--mask-point) + 500px);
+    z-index: -1;
     background-image: url('images/main-bg.png');
     background-size: cover;
     background-position: center center;
-    /* 背景と同期させるための重要設定 */
-    background-attachment: fixed; 
-    overflow: hidden;
+    background-attachment: fixed; /* 背景と位置を完全に同期 */
   }
 
   @media (max-width: 1024px) {
-    .header-clipper {
-      height: calc(var(--mask-point-sp) + 300px);
-      background-image: url('images/main-bg-sp.png');
-    }
+    .header-guard { background-image: url('images/main-bg-sp.png'); }
   }
 
-  .header-clipper::after {
+  /* 目隠し部分にも黒いヴェールをかける */
+  .header-guard::after {
     content: '';
     position: absolute;
     top: 0; left: 0; width: 100%; height: 100%;
     background: rgba(0, 0, 0, 0.6);
-  }
-
-  header {
-    position: fixed;
-    top: 0; left: 0; width: 100%;
-    z-index: 20;
   }
 
   .logo-area {
@@ -107,9 +99,9 @@
     align-items: center;
     font-size: 1.5rem;
     font-weight: bold;
-    letter-spacing: 0.15em;
     color: #fff;
     text-decoration: none;
+    letter-spacing: 0.15em;
   }
 
   .logo-area img { height: 4.5rem; width: auto; margin-right: 20px; }
@@ -124,88 +116,76 @@
   ========================================= */
   main {
     position: relative;
-    z-index: 1;
-    padding-top: var(--mask-point-pc);
-    padding-bottom: 120px;
-  }
-
-  @media (max-width: 1024px) {
-    main { padding-top: var(--mask-point-sp); }
+    z-index: 10; /* 目隠し(z:100)の下を潜る */
+    padding-top: var(--mask-point);
+    padding-bottom: 150px;
   }
 
   .container {
     margin: 0 auto;
     width: 92%;
-    max-width: 1000px; 
+    /* 最大幅：PC(1000px) / タブレット(750px) */
+    max-width: 1000px;
   }
 
   @media (max-width: 1024px) {
     .container { max-width: 750px; }
   }
 
-  h1, h2, h3 {
-    font-family: "Yu Mincho", "Hiragino Mincho ProN", serif;
-    font-weight: 600;
-  }
+  h1, h2, h3 { font-family: "Yu Mincho", "Hiragino Mincho ProN", serif; font-weight: 600; }
 
-  .hero-fullscreen {
-    height: calc(100vh - var(--mask-point-pc)); 
+  .hero-block {
+    height: calc(100vh - var(--mask-point));
     display: flex;
     align-items: center;
   }
 
-  .hero-text-block h1 { 
-    font-size: clamp(1.8rem, 5vw, 2.8rem);
-    line-height: 1.4; 
-    margin-bottom: 24px;
-    word-break: auto-phrase;
-  }
+  .hero-block h1 { font-size: clamp(1.8rem, 5vw, 2.8rem); line-height: 1.4; margin-bottom: 24px; }
 
   .lead, .declarations { padding: 80px 0; }
 
+  /* 宣言タイトル：2px余白・左詰め・グラスモーフィズム */
   .declarations h2 {
     display: inline-block;
-    padding: 2px 10px;
+    padding: 2px 10px; 
     font-size: clamp(1.4rem, 4vw, 1.8rem);
-    color: #fff;
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
     border: 1px solid rgba(255, 255, 255, 0.15);
     border-radius: 4px;
-    margin: 0 0 35px 0;
+    margin-bottom: 35px;
   }
 
-  .card-stack { display: flex; flex-direction: column; gap: 35px; }
+  .card-stack { display: flex; flex-direction: column; gap: 35px; } /* 35pxに狭めた */
   .card { padding-left: 25px; border-left: 4px solid var(--accent-color); }
   .card h3 { font-size: 1.3rem; margin-bottom: 8px; color: #fff; }
 
   /* =========================================
-     フッター
+     フッター：スリム固定
   ========================================= */
   footer {
     position: fixed;
     bottom: 0; left: 0; width: 100%;
-    z-index: 1001;
-    background-color: var(--footer-green);
+    z-index: 200;
   }
 
   .footer-tier-top { background-color: var(--accent-color); height: 8px; }
-  .footer-tier-bottom { padding: 10px 0; color: #fff; text-align: center; font-size: 0.8rem; font-weight: bold; }
-
-  /* 一括表示フェードイン */
-  .loading-hidden { opacity: 0; }
-  .loaded { opacity: 1; transition: opacity 0.6s ease; }
+  .footer-tier-bottom { 
+    background-color: var(--footer-green);
+    padding: 10px 0;
+    text-align: center;
+    color: #fff; font-size: 0.8rem; font-weight: bold;
+  }
 </style>
 </head>
-<body class="loading-hidden">
+<body>
 
-<div id="bg-fixed-base"></div>
+<div class="bg-fixed"></div>
 <div class="bg-overlay"></div>
-<div class="header-clipper"></div>
 
 <header>
-  <div class="container">
+  <div class="header-guard"></div> <div class="container">
     <a href="#" class="logo-area">
       <img src="images/logo.png" alt="湘南AI企画ロゴ">
       <span>湘南AI企画</span>
@@ -214,12 +194,10 @@
 </header>
 
 <main>
-  <section class="hero-fullscreen">
+  <section class="hero-block">
     <div class="container">
-      <div class="hero-text-block">
-        <h1>Webページ・SNS動画を、<br>適正価格で、より早く。</h1>
-        <p>最新のテクノロジーを活用し、<br>地域企業様のビジュアルをサポートするデザインパートナーです。</p>
-      </div>
+      <h1>Webページ・SNS動画を、<br>適正価格で、より早く。</h1>
+      <p>最新のテクノロジーを活用し、<br>地域企業様のビジュアルをサポートするデザインパートナーです。</p>
     </div>
   </section>
 
@@ -254,32 +232,9 @@
 <footer>
   <div class="footer-tier-top"></div>
   <div class="footer-tier-bottom">
-    <div class="container">
-      <p>&copy; 2026 湘南AI企画</p>
-    </div>
+    <p>&copy; 2026 湘南AI企画</p>
   </div>
 </footer>
-
-<script>
-  /**
-   * スマホの背景ガタつきを止めるスクリプト
-   */
-  const fixBgHeight = () => {
-    const bg = document.getElementById('bg-fixed-base');
-    // 現在の画面の「本当の高さ」を取得して固定する
-    bg.style.height = `${window.innerHeight}px`;
-  };
-
-  window.addEventListener('load', () => {
-    fixBgHeight();
-    document.body.classList.add('loaded');
-  });
-
-  // 画面の向きを変えた時だけ高さを再計算
-  window.addEventListener('orientationchange', () => {
-    setTimeout(fixBgHeight, 100);
-  });
-</script>
 
 </body>
 </html>
