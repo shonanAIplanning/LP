@@ -6,11 +6,13 @@
 <title>湘南AI企画</title>
 <style>
   :root {
-    /* 背景が暗くなるため、メインカラーを白ベースに反転 */
     --primary-color: #ffffff;
-    --accent-color: #5ABEE6; /* ご指定のライトブルー */
+    --accent-color: #5ABEE6; 
     --text-main: #f8fafc;
     --text-light: rgba(255, 255, 255, 0.85);
+    --footer-green: #B4D750;
+    --header-height: 160px;
+    --footer-height: 50px; 
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -19,308 +21,254 @@
     font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
     color: var(--text-main);
     line-height: 1.8;
-    position: relative;
-    /* 本文に影をつけて、画像の上でも読みやすくする */
-    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
+    background-color: #14191e; /* 万が一の隙間もこの色でカバー */
+    overflow-x: hidden;
+    min-height: 100vh;
   }
 
   /* =========================================
-     【最重要】背景画像の全画面固定（iOS対応の堅牢な書き方）
+     背景画像：天地左右センター固定
   ========================================= */
   body::before {
     content: '';
-    position: fixed;git 
+    position: fixed;
     top: 0; left: 0;
-    width: 100vw; height: 100vh;
-    background-image: url('images/main-bg.png');
-    background-size: cover;
-    background-position: center center;
+    width: 100%; height: 100%;
+    background-image: url('images/main-bg.png'); 
+    background-size: cover;          /* 常に画面を隙間なく埋める */
+    background-position: center center; /* 【修正】天地左右のセンターに固定 */
     background-repeat: no-repeat;
-    z-index: -2; /* 一番奥に配置 */
+    z-index: -2;
   }
 
-  /* 背景画像全体を少し暗くして、白文字を際立たせるオーバーレイ */
+  @media (max-width: 1024px) {
+    body::before {
+      background-image: url('images/main-bg-sp.png'); 
+      background-position: center center; /* スマホ版もセンター固定 */
+    }
+  }
+
   body::after {
     content: '';
     position: fixed;
     top: 0; left: 0;
-    width: 100vw; height: 100vh;
-    background: rgba(20, 25, 30, 0.75); /* 画像全体に薄い黒のフィルムを被せる */
+    width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.6); 
     z-index: -1;
   }
 
   h1, h2, h3 {
     font-family: "Yu Mincho", "Hiragino Mincho ProN", serif;
-    color: var(--primary-color);
+    color: #fff;
     font-weight: 600;
   }
 
+  /* =========================================
+     コンテナ：2パターンの固定幅
+  ========================================= */
   .container {
-    max-width: 1000px;
     margin: 0 auto;
-    padding: 0 5%;
+    width: 1000px;
+  }
+
+  @media (max-width: 1024px) {
+    .container {
+      width: 750px;
+      max-width: 95%;
+    }
   }
 
   /* =========================================
-     ヘッダー（透明感のあるダークグラス仕様）
+     ヘッダー：文字隠しマスク（背景と同期）
   ========================================= */
   header {
-    background: rgba(0, 0, 0, 0.4);
-    backdrop-filter: blur(10px); /* 後ろの画像をぼかす */
-    -webkit-backdrop-filter: blur(10px);
-    padding: 20px 0;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    border-bottom: 1px solid rgba(255,255,255,0.1);
+    position: fixed; 
+    top: 0; left: 0; width: 100%;
+    z-index: 1000;
   }
 
-  .logo {
+  .header-mask {
+    position: absolute;
+    top: 0; left: 0; width: 100%;
+    height: var(--header-height); 
+    background-image: url('images/main-bg.png');
+    background-size: cover;
+    background-position: center center; /* 本体背景と完全に一致させる */
+    background-attachment: fixed;      /* スクロールしても背景を動かさない */
+    z-index: -1;
+  }
+  
+  @media (max-width: 1024px) {
+    .header-mask {
+      height: 120px;
+      background-image: url('images/main-bg-sp.png');
+      background-position: center center;
+    }
+  }
+
+  .header-mask::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+  }
+
+  .logo-area {
+    padding: 30px 0;
     display: flex;
     align-items: center;
     font-size: 1.5rem;
     font-weight: bold;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.15em;
     color: #fff;
     text-decoration: none;
-    text-shadow: none;
   }
 
-  .logo img {
-    height: 6rem;
+  .logo-area img {
+    height: 4.5rem;
     width: auto;
-    margin-right: 16px;
-    display: block;
-    /* ロゴ画像（黒文字等の場合）が見えるよう必要に応じて白くする処理 */
-    /* filter: brightness(0) invert(1); */ 
+    margin-right: 20px;
   }
 
   /* =========================================
-     ファーストビュー（背景指定を削除し、レイアウトのみに）
+     コンテンツ
   ========================================= */
+  main {
+    position: relative;
+    padding-top: var(--header-height);
+    padding-bottom: calc(var(--footer-height) + 60px); /* フッター被り防止 */
+  }
+
+  @media (max-width: 1024px) {
+    main { padding-top: 120px; }
+    .logo-area { font-size: 1.2rem; }
+    .logo-area img { height: 3.5rem; }
+  }
+
   .hero-fullscreen {
     width: 100%;
-    height: calc(100vh - 120px); 
-    min-height: 500px;
+    height: calc(100vh - var(--header-height)); 
     display: flex;
     align-items: center;
   }
 
-  .hero-text-block {
-    padding: 40px 0;
-    width: fit-content;
-    margin: 0 auto;
-    text-align: left;
-    animation: fadeUp 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-    opacity: 0;
-    transform: translateY(30px);
-  }
+  .hero-text-block h1 { font-size: 2.8rem; line-height: 1.4; margin-bottom: 24px; }
 
-  @keyframes fadeUp {
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  .hero-text-block h1 {
-    font-size: 2.8rem;
-    line-height: 1.4;
-    margin-bottom: 24px;
-    letter-spacing: 0.05em;
-  }
-
-  .hero-text-block p {
-    font-size: 1.1rem;
-    color: var(--text-light);
-  }
-
-  .comma-pc { display: inline; }
-
-  /* =========================================
-     リード文（白背景を撤廃し、文字だけに）
-  ========================================= */
-  .lead {
-    padding: 80px 0;
-    /* background: #fff; を削除 */
-  }
-
+  .lead { padding: 100px 0; }
   .lead h2 { 
     font-size: 2rem; 
     margin-bottom: 30px; 
     border-left: 5px solid var(--accent-color);
     padding-left: 15px;
-    line-height: 1.3;
   }
 
-  .lead p { 
-    font-size: 1.05rem; 
-    line-height: 2; 
-  }
-
-  .text-lock.lead-lock {
-    text-align: left;
-    max-width: 720px;
-    width: 90%;
-    margin: 0 auto;
-  }
-
-  /* =========================================
-     安心宣言（カードの箱を撤廃し、文字だけに）
-  ========================================= */
-  .declarations {
-    padding: 100px 0 150px;
-  }
-
-  .declarations h2 {
-    text-align: center;
-    font-size: 2.2rem;
-    margin-bottom: 60px;
-  }
+  .declarations { padding: 100px 0; }
+  .declarations h2 { text-align: center; font-size: 2.2rem; margin-bottom: 60px; }
 
   .card-stack {
     display: flex;
     flex-direction: column;
-    gap: 60px; /* 余白を広げて読みやすく */
-    max-width: 760px;
-    margin: 0 auto;
+    gap: 60px;
   }
 
-  /* カードデザインを解除し、シンプルなテキストブロックへ */
   .card {
-    position: relative;
-    padding: 10px 0 10px 25px;
-    border-left: 4px solid var(--accent-color); /* 左の青線だけ残す */
+    padding-left: 25px;
+    border-left: 4px solid var(--accent-color);
   }
 
-  .card::before {
-    content: attr(data-num);
-    position: absolute;
-    top: -50px;
-    right: 0;
-    font-size: 12rem;
-    font-weight: 900;
-    font-family: 'Helvetica Neue', Arial, sans-serif;
-    color: rgba(255, 255, 255, 0.05); /* 透かし文字を白に変更 */
-    line-height: 1;
-    pointer-events: none;
-    z-index: -1;
-  }
-
-  .card-number {
-    display: inline-block;
-    font-size: 0.95rem;
-    letter-spacing: 0.15em;
-    margin-bottom: 10px;
-    font-weight: bold;
-    color: var(--accent-color);
-  }
-
-  .card h3 {
-    font-size: 1.4rem;
-    line-height: 1.5;
-    margin-bottom: 15px;
-  }
-
-  .card p {
-    font-size: 1rem;
-    color: var(--text-light);
-  }
+  .card h3 { font-size: 1.4rem; margin-bottom: 15px; }
 
   /* =========================================
-     フッター（シネマティックに合わせた半透明ダーク）
+     フッター：スリム2段 ＆ 固定
   ========================================= */
   footer {
-    background: rgba(0, 0, 0, 0.6); /* ご指定の黄緑はトーンが合わないためダークに変更 */
-    backdrop-filter: blur(5px);
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1001;
+    margin: 0;
+    border: none;
+  }
+
+  .footer-tier-top {
+    background-color: var(--accent-color);
+    height: 8px;
+  }
+
+  .footer-tier-bottom {
+    background-color: var(--footer-green);
+    padding: 10px 0; /* スリム化 */
     color: #fff;
     text-align: center;
-    padding: 40px 0;
-    font-size: 0.9rem;
-    border-top: 1px solid rgba(255,255,255,0.1);
+    font-size: 0.8rem;
+    font-weight: bold;
   }
 
-  /* =========================================
-     レスポンシブ
-  ========================================= */
-  @media (min-width: 769px) {
-    .br-sp { display: none; }
-    .br-pc { display: block; }
-  }
-
-  @media (max-width: 768px) {
-    .br-pc { display: none; }
-    .br-sp { display: block; }
-    .comma-pc { display: none; }
-
-    .hero-text-block { width: 90%; padding: 20px 0; }
-    .hero-text-block h1 { font-size: 1.8rem; line-height: 1.5; }
-    .hero-text-block p { font-size: 1rem; }
-    
-    .lead h2 { font-size: 1.5rem; padding-left: 10px; }
-    
-    .card { padding: 10px 0 10px 15px; }
-    .card::before { font-size: 8rem; top: -30px; }
-    .card h3 { font-size: 1.2rem; }
+  @media (max-width: 1024px) {
+    .hero-text-block h1 { font-size: 1.8rem; }
   }
 </style>
 </head>
 <body>
 
 <header>
-  <div class="container logo">
-    <img src="images/logo.png" alt="湘南AI企画ロゴ">
-    <span>湘南AI企画</span>
+  <div class="header-mask"></div>
+  <div class="container">
+    <a href="#" class="logo-area">
+      <img src="images/logo.png" alt="湘南AI企画ロゴ">
+      <span>湘南AI企画</span>
+    </a>
   </div>
 </header>
 
-<section class="hero-fullscreen">
-  <div class="container" style="width: 100%;">
-    <div class="hero-text-block">
-      <h1>Webページ・SNS動画を<span class="comma-pc">、</span><br class="br-pc"><br class="br-sp">適正価格で<span class="comma-pc">、</span><br class="br-sp">より早く。</h1>
-      <p>最新のテクノロジーを活用し、<br class="br-sp">地域企業様のビジュアルをサポートする<br class="br-sp">デザインパートナーです。</p>
-    </div>
-  </div>
-</section>
-
-<section class="lead">
-  <div class="container">
-    <div class="text-lock lead-lock">
-      <h2>「良いものは、高くて時間がかかる」を覆す。</h2>
-      <p>私たちがAIを多用するのは、手抜きをするためではありません。<br class="br-pc">
-      ルーティン作業をAIに任せ、人間のプロフェッショナルなリソースを<br class="br-pc"><br class="br-sp">
-      「御社のビジネス課題を解決する設計」と<br class="br-sp">「最終的な品質の磨き上げ」に<br class="br-sp">100％集中させるためです。</p>
-    </div>
-  </div>
-</section>
-
-<section class="declarations">
-  <div class="container">
-    <h2>3つのAI安心宣言</h2>
-    <div class="card-stack">
-      
-      <div class="card" data-num="1">
-        <span class="card-number">オリジナリティ</span>
-        <h3>生成AIの出力結果をそのまま納品することは一切ありません。</h3>
-        <p>商用利用がクリアされた環境のみに限定し、最終成果物は必ず人間のクリエイターが再構築を行います。他社の権利を侵害しないオリジナル制作物として納品いたします。</p>
+<main>
+  <section class="hero-fullscreen">
+    <div class="container">
+      <div class="hero-text-block">
+        <h1>Webページ・SNS動画を、<br>適正価格で、<br>より早く。</h1>
+        <p>最新のテクノロジーを活用し、<br>地域企業様のビジュアルをサポートするデザインパートナーです。</p>
       </div>
-
-      <div class="card" data-num="2">
-        <span class="card-number">厳格な遮断</span>
-        <h3>情報漏洩リスクを物理的に遮断しています。</h3>
-        <p>御社からお預かりした内部情報や顧客データを、AIの学習データとして送信・利用することは絶対にありません。学習利用されない（オプトアウト済みの）クローズド環境のみを使用します。</p>
-      </div>
-
-      <div class="card" data-num="3">
-        <span class="card-number">品質保証</span>
-        <h3>人間による徹底した品質保証</h3>
-        <p>AIはあくまで「優秀なアシスタント」であり、ディレクションと最終決定権は人間が持ちます。</p>
-      </div>
-
     </div>
-  </div>
-</section>
+  </section>
+
+  <section class="lead">
+    <div class="container">
+      <div class="text-lock lead-lock">
+        <h2>「良いものは、高くて時間がかかる」を覆す。</h2>
+        <p>私たちがAIを多用するのは、手抜きをするためではありません。<br>
+        ルーティン作業をAIに任せ、人間のリソースを「設計」と「品質」に100％集中させるためです。</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="declarations">
+    <div class="container">
+      <h2>3つのAI安心宣言</h2>
+      <div class="card-stack">
+        <div class="card">
+          <h3>1. 生成AIの出力結果をそのまま納品することは一切ありません。</h3>
+          <p>商用利用がクリアされた環境のみに限定し、最終成果物は必ず人間のクリエイターが再構築を行います。</p>
+        </div>
+        <div class="card">
+          <h3>2. 厳格な遮断</h3>
+          <p>御社からお預かりした内部情報を、AIの学習データとして利用することは絶対にありません。</p>
+        </div>
+        <div class="card">
+          <h3>3. 品質保証</h3>
+          <p>AIはあくまで「優秀なアシスタント」であり、ディレクションと最終決定権は人間が持ちます。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
 
 <footer>
-  <div class="container">
-    <p>&copy; 2026 湘南AI企画</p>
+  <div class="footer-tier-top"></div>
+  <div class="footer-tier-bottom">
+    <div class="container">
+      <p>&copy; 2026 湘南AI企画</p>
+    </div>
   </div>
 </footer>
 
