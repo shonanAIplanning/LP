@@ -15,9 +15,10 @@
     --text-main: #f8fafc;
     --footer-green: #B4D750;
     
-    /* 消失ライン（ロゴ+社名の直下） */
-    --mask-line-pc: 102px; 
-    --mask-line-sp: 76px;
+    /* 消失ライン（ロゴ+社名のすぐ下） */
+    --mask-point-pc: 107px; 
+    --mask-point-sp: 91px;
+    --footer-height: 50px; 
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -31,12 +32,12 @@
   }
 
   /* =========================================
-     【最背面：Z-index -2】 唯一無二の背景画像
+     背景画像：不動のセンター固定
   ========================================= */
-  .bg-base {
+  .bg-fixed {
     position: fixed;
     top: 0; left: 0;
-    width: 100vw; height: 100vh;
+    width: 100%; height: 100%;
     z-index: -2;
     background-image: url('images/main-bg.png'); 
     background-size: cover;
@@ -46,11 +47,10 @@
   }
 
   @media (max-width: 1024px) {
-    .bg-base { background-image: url('images/main-bg-sp.png'); }
+    .bg-fixed { background-image: url('images/main-bg-sp.png'); }
   }
 
-  /* 全体に等しくかかる黒オーバーレイ */
-  .bg-overlay-global {
+  .bg-overlay {
     position: fixed;
     top: 0; left: 0;
     width: 100%; height: 100%;
@@ -59,48 +59,41 @@
   }
 
   /* =========================================
-     【前面：Z-index 10-20】 ヘッダーと「目隠しカーテン」
+     前面：ヘッダー目隠しレイヤー
   ========================================= */
-  header {
-    position: fixed; 
+  .header-clipper {
+    position: fixed;
     top: 0; left: 0; width: 100%;
-    z-index: 100; /* 文字(z:1)より上に配置 */
-  }
-
-  /* 文字を隠すための「背景と同じ柄」のカーテン */
-  .header-curtain {
-    position: absolute;
-    top: -300px; /* バウンス対策：上方向に延長 */
-    left: 0; width: 100%;
-    height: calc(var(--mask-line-pc) + 300px);
-    
-    /* 背景と全く同じ設定にすることで、透けているように見せる */
+    height: var(--mask-point-pc);
+    z-index: 10;
     background-image: url('images/main-bg.png');
     background-size: cover;
     background-position: center center;
-    background-attachment: fixed; /* これで背景と同期 */
-    z-index: 10;
+    background-attachment: fixed;
   }
 
   @media (max-width: 1024px) {
-    .header-curtain {
-      height: calc(var(--mask-line-sp) + 300px);
+    .header-clipper {
+      height: var(--mask-point-sp);
       background-image: url('images/main-bg-sp.png');
     }
   }
 
-  /* カーテンにも同じ暗さを適用して背景と一体化させる */
-  .header-curtain::after {
+  .header-clipper::after {
     content: '';
     position: absolute;
     top: 0; left: 0; width: 100%; height: 100%;
     background: rgba(0, 0, 0, 0.6);
   }
 
+  header {
+    position: fixed;
+    top: 0; left: 0; width: 100%;
+    z-index: 20;
+  }
+
   .logo-area {
-    position: relative;
-    z-index: 20; /* カーテンより上にロゴ */
-    padding: 30px 0 0 0;
+    padding: 30px 0 5px 0;
     display: flex;
     align-items: center;
     font-size: 1.5rem;
@@ -113,37 +106,41 @@
   .logo-area img { height: 4.5rem; width: auto; margin-right: 20px; }
 
   @media (max-width: 1024px) {
-    .logo-area { padding: 20px 0 0 0; font-size: 1.2rem; }
+    .logo-area { padding: 20px 0 5px 0; font-size: 1.2rem; }
     .logo-area img { height: 3.5rem; }
   }
 
   /* =========================================
-     【中間：Z-index 1】 スクロールする文字要素
+     コンテンツ
   ========================================= */
   main {
     position: relative;
-    z-index: 1; /* カーテン(z:10)の下を潜る */
-    padding-top: var(--mask-line-pc);
+    z-index: 1;
+    padding-top: var(--mask-point-pc);
     padding-bottom: 120px;
   }
 
   @media (max-width: 1024px) {
-    main { padding-top: var(--mask-line-sp); }
+    main { padding-top: var(--mask-point-sp); }
   }
 
   .container {
     margin: 0 auto;
     width: 92%;
-    max-width: 1000px;
+    max-width: 1000px; 
   }
 
   @media (max-width: 1024px) {
     .container { max-width: 750px; }
   }
 
-  /* コンテンツ内容 */
+  h1, h2, h3 {
+    font-family: "Yu Mincho", "Hiragino Mincho ProN", serif;
+    font-weight: 600;
+  }
+
   .hero-fullscreen {
-    height: calc(100vh - var(--mask-line-pc)); 
+    height: calc(100vh - var(--mask-point-pc)); 
     display: flex;
     align-items: center;
   }
@@ -151,18 +148,61 @@
   .hero-text-block h1 { 
     font-size: clamp(1.8rem, 5vw, 2.8rem);
     line-height: 1.4; 
-    margin-bottom: 24px; 
+    margin-bottom: 24px;
     word-break: auto-phrase;
   }
 
   .lead { padding: 80px 0; }
-  .declarations { padding: 80px 0; }
-
-  .card-stack { display: flex; flex-direction: column; gap: 60px; }
-  .card { padding-left: 25px; border-left: 4px solid var(--accent-color); }
+  .lead h2 { 
+    font-size: clamp(1.5rem, 4vw, 2rem);
+    margin-bottom: 30px; 
+    border-left: 5px solid var(--accent-color);
+    padding-left: 15px;
+  }
 
   /* =========================================
-     フッター：スリム固定
+     宣言セクション：タイトな左詰めデザイン
+  ========================================= */
+  .declarations { 
+    padding: 80px 0;
+  }
+
+  .declarations h2 {
+    display: inline-block;
+    padding: 2px 10px; /* 文字に対して約2pxのタイトな余白 */
+    font-size: clamp(1.4rem, 4vw, 1.8rem);
+    color: #fff;
+    
+    /* 極薄・極細の半透明ガラス */
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 4px;
+    
+    margin: 0 0 35px 0; /* 左詰めで下のカードとの距離を確保 */
+    text-align: left;
+  }
+
+  .card-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 35px;
+  }
+
+  .card {
+    padding-left: 25px;
+    border-left: 4px solid var(--accent-color);
+  }
+
+  .card h3 { 
+    font-size: 1.3rem; 
+    margin-bottom: 8px; 
+    color: #fff;
+  }
+
+  /* =========================================
+     フッター
   ========================================= */
   footer {
     position: fixed;
@@ -174,19 +214,17 @@
   .footer-tier-top { background-color: var(--accent-color); height: 8px; }
   .footer-tier-bottom { padding: 10px 0; color: #fff; text-align: center; font-size: 0.8rem; font-weight: bold; }
 
-  /* 読み込み完了まで待機 */
   .loading-hidden { opacity: 0; }
-  .loaded { opacity: 1; transition: opacity 0.8s ease; }
-
+  .loaded { opacity: 1; transition: opacity 0.6s ease; }
 </style>
 </head>
 <body class="loading-hidden">
 
-<div class="bg-base"></div>
-<div class="bg-overlay-global"></div>
+<div class="bg-fixed"></div>
+<div class="bg-overlay"></div>
+<div class="header-clipper"></div>
 
 <header>
-  <div class="header-curtain"></div>
   <div class="container">
     <a href="#" class="logo-area">
       <img src="images/logo.png" alt="湘南AI企画ロゴ">
@@ -243,7 +281,6 @@
 </footer>
 
 <script>
-  // 画像を含む全リソースが揃ってから表示（表示の遅れを解消）
   window.addEventListener('load', () => {
     document.body.classList.add('loaded');
   });
