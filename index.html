@@ -28,26 +28,29 @@
     color: var(--text-main);
     background-color: #14191e;
     overflow-x: hidden;
-    overscroll-behavior-y: none;
+    /* iOSのバウンスによる挙動不安定を緩和 */
+    -webkit-overflow-scrolling: touch;
   }
 
   /* =========================================
-     背景画像：不動のセンター固定
+     【修正】背景画像：ズームさせないための固定配置
   ========================================= */
-  .bg-fixed {
+  #bg-fixed-base {
     position: fixed;
     top: 0; left: 0;
-    width: 100%; height: 100%;
+    width: 100%;
+    height: 100%; /* JSで高さをロックします */
     z-index: -2;
     background-image: url('images/main-bg.png'); 
     background-size: cover;
     background-position: center center;
     background-repeat: no-repeat;
+    /* モバイルでの再レンダリング負荷を軽減 */
     transform: translateZ(0);
   }
 
   @media (max-width: 1024px) {
-    .bg-fixed { background-image: url('images/main-bg-sp.png'); }
+    #bg-fixed-base { background-image: url('images/main-bg-sp.png'); }
   }
 
   .bg-overlay {
@@ -59,22 +62,28 @@
   }
 
   /* =========================================
-     前面：ヘッダー目隠しレイヤー
+     【修正】前面目隠し：跳ね返りで見えないよう「上」に延長
   ========================================= */
   .header-clipper {
     position: fixed;
-    top: 0; left: 0; width: 100%;
-    height: var(--mask-point-pc);
+    /* 上側に大きく突き出させて隙間を完全に塞ぐ */
+    top: -300px; 
+    left: 0; width: 100%;
+    /* 消失点(mask-point) + 上の突き出し分(300px) */
+    height: calc(var(--mask-point-pc) + 300px);
     z-index: 10;
+    
     background-image: url('images/main-bg.png');
     background-size: cover;
     background-position: center center;
-    background-attachment: fixed;
+    /* 背景と同期させるための重要設定 */
+    background-attachment: fixed; 
+    overflow: hidden;
   }
 
   @media (max-width: 1024px) {
     .header-clipper {
-      height: var(--mask-point-sp);
+      height: calc(var(--mask-point-sp) + 300px);
       background-image: url('images/main-bg-sp.png');
     }
   }
@@ -152,54 +161,24 @@
     word-break: auto-phrase;
   }
 
-  .lead { padding: 80px 0; }
-  .lead h2 { 
-    font-size: clamp(1.5rem, 4vw, 2rem);
-    margin-bottom: 30px; 
-    border-left: 5px solid var(--accent-color);
-    padding-left: 15px;
-  }
-
-  /* =========================================
-     宣言セクション：タイトな左詰めデザイン
-  ========================================= */
-  .declarations { 
-    padding: 80px 0;
-  }
+  .lead, .declarations { padding: 80px 0; }
 
   .declarations h2 {
     display: inline-block;
-    padding: 2px 10px; /* 文字に対して約2pxのタイトな余白 */
+    padding: 2px 10px;
     font-size: clamp(1.4rem, 4vw, 1.8rem);
     color: #fff;
-    
-    /* 極薄・極細の半透明ガラス */
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
     border: 1px solid rgba(255, 255, 255, 0.15);
     border-radius: 4px;
-    
-    margin: 0 0 35px 0; /* 左詰めで下のカードとの距離を確保 */
-    text-align: left;
+    margin: 0 0 35px 0;
   }
 
-  .card-stack {
-    display: flex;
-    flex-direction: column;
-    gap: 35px;
-  }
-
-  .card {
-    padding-left: 25px;
-    border-left: 4px solid var(--accent-color);
-  }
-
-  .card h3 { 
-    font-size: 1.3rem; 
-    margin-bottom: 8px; 
-    color: #fff;
-  }
+  .card-stack { display: flex; flex-direction: column; gap: 35px; }
+  .card { padding-left: 25px; border-left: 4px solid var(--accent-color); }
+  .card h3 { font-size: 1.3rem; margin-bottom: 8px; color: #fff; }
 
   /* =========================================
      フッター
@@ -214,13 +193,14 @@
   .footer-tier-top { background-color: var(--accent-color); height: 8px; }
   .footer-tier-bottom { padding: 10px 0; color: #fff; text-align: center; font-size: 0.8rem; font-weight: bold; }
 
+  /* 一括表示フェードイン */
   .loading-hidden { opacity: 0; }
   .loaded { opacity: 1; transition: opacity 0.6s ease; }
 </style>
 </head>
 <body class="loading-hidden">
 
-<div class="bg-fixed"></div>
+<div id="bg-fixed-base"></div>
 <div class="bg-overlay"></div>
 <div class="header-clipper"></div>
 
@@ -281,8 +261,23 @@
 </footer>
 
 <script>
+  /**
+   * スマホの背景ガタつきを止めるスクリプト
+   */
+  const fixBgHeight = () => {
+    const bg = document.getElementById('bg-fixed-base');
+    // 現在の画面の「本当の高さ」を取得して固定する
+    bg.style.height = `${window.innerHeight}px`;
+  };
+
   window.addEventListener('load', () => {
+    fixBgHeight();
     document.body.classList.add('loaded');
+  });
+
+  // 画面の向きを変えた時だけ高さを再計算
+  window.addEventListener('orientationchange', () => {
+    setTimeout(fixBgHeight, 100);
   });
 </script>
 
