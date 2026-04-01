@@ -2,8 +2,12 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>湘南AI企画</title>
+
+<link rel="preload" href="images/main-bg.png" as="image">
+<link rel="preload" href="images/main-bg-sp.png" as="image">
+
 <style>
   :root {
     --primary-color: #ffffff;
@@ -11,8 +15,14 @@
     --text-main: #f8fafc;
     --text-light: rgba(255, 255, 255, 0.85);
     --footer-green: #B4D750;
-    --header-height: 160px;
+    
+    /* ロゴ直下の消失ライン（攻めの設定） */
+    --header-height: 107px; 
     --footer-height: 50px; 
+  }
+
+  @media (max-width: 1024px) {
+    :root { --header-height: 91px; }
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -20,36 +30,33 @@
   body {
     font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
     color: var(--text-main);
-    line-height: 1.8;
-    background-color: #14191e; /* 万が一の隙間もこの色でカバー */
+    background-color: #14191e;
     overflow-x: hidden;
-    min-height: 100vh;
+    overscroll-behavior-y: none;
   }
 
   /* =========================================
-     背景画像：天地左右センター固定
+     背景画像：不動のセンター固定
   ========================================= */
-  body::before {
-    content: '';
+  .bg-fixed-layer {
     position: fixed;
     top: 0; left: 0;
-    width: 100%; height: 100%;
-    background-image: url('images/main-bg.png'); 
-    background-size: cover;          /* 常に画面を隙間なく埋める */
-    background-position: center center; /* 【修正】天地左右のセンターに固定 */
-    background-repeat: no-repeat;
+    width: 100vw; height: 100vh;
     z-index: -2;
+    background-image: url('images/main-bg.png'); 
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+    transform: translateZ(0);
   }
 
   @media (max-width: 1024px) {
-    body::before {
+    .bg-fixed-layer {
       background-image: url('images/main-bg-sp.png'); 
-      background-position: center center; /* スマホ版もセンター固定 */
     }
   }
 
-  body::after {
-    content: '';
+  .bg-overlay {
     position: fixed;
     top: 0; left: 0;
     width: 100%; height: 100%;
@@ -59,27 +66,26 @@
 
   h1, h2, h3 {
     font-family: "Yu Mincho", "Hiragino Mincho ProN", serif;
-    color: #fff;
     font-weight: 600;
   }
 
   /* =========================================
-     コンテナ：2パターンの固定幅
+     コンテナ：可変（リキッド）レイアウト
   ========================================= */
   .container {
     margin: 0 auto;
-    width: 1000px;
+    width: 92%; /* 画面幅に合わせて可変 */
+    max-width: 1000px; /* PCでの最大幅 */
   }
 
   @media (max-width: 1024px) {
     .container {
-      width: 750px;
-      max-width: 95%;
+      max-width: 750px; /* タブレットでの最大幅 */
     }
   }
 
   /* =========================================
-     ヘッダー：文字隠しマスク（背景と同期）
+     ヘッダー：消失ラインをロゴ直下に固定
   ========================================= */
   header {
     position: fixed; 
@@ -89,20 +95,19 @@
 
   .header-mask {
     position: absolute;
-    top: 0; left: 0; width: 100%;
-    height: var(--header-height); 
+    top: -400px; 
+    left: 0; width: 100%;
+    height: calc(var(--header-height) + 400px); 
     background-image: url('images/main-bg.png');
     background-size: cover;
-    background-position: center center; /* 本体背景と完全に一致させる */
-    background-attachment: fixed;      /* スクロールしても背景を動かさない */
+    background-position: center center;
+    background-attachment: fixed;
     z-index: -1;
   }
   
   @media (max-width: 1024px) {
     .header-mask {
-      height: 120px;
       background-image: url('images/main-bg-sp.png');
-      background-position: center center;
     }
   }
 
@@ -114,7 +119,7 @@
   }
 
   .logo-area {
-    padding: 30px 0;
+    padding: 30px 0 5px 0; /* 下余白を5pxに絞って消失点を攻める */
     display: flex;
     align-items: center;
     font-size: 1.5rem;
@@ -130,19 +135,18 @@
     margin-right: 20px;
   }
 
+  @media (max-width: 1024px) {
+    .logo-area { font-size: 1.2rem; }
+    .logo-area img { height: 3.5rem; }
+  }
+
   /* =========================================
-     コンテンツ
+     メインコンテンツ
   ========================================= */
   main {
     position: relative;
     padding-top: var(--header-height);
-    padding-bottom: calc(var(--footer-height) + 60px); /* フッター被り防止 */
-  }
-
-  @media (max-width: 1024px) {
-    main { padding-top: 120px; }
-    .logo-area { font-size: 1.2rem; }
-    .logo-area img { height: 3.5rem; }
+    padding-bottom: calc(var(--footer-height) + 100px);
   }
 
   .hero-fullscreen {
@@ -152,17 +156,22 @@
     align-items: center;
   }
 
-  .hero-text-block h1 { font-size: 2.8rem; line-height: 1.4; margin-bottom: 24px; }
+  .hero-text-block h1 { 
+    font-size: clamp(1.8rem, 5vw, 2.8rem); /* 幅に合わせてフォントサイズも微調整 */
+    line-height: 1.4; 
+    margin-bottom: 24px; 
+    word-break: auto-phrase; /* 読みやすい位置での改行を促進 */
+  }
 
-  .lead { padding: 100px 0; }
+  .lead { padding: 80px 0; }
   .lead h2 { 
-    font-size: 2rem; 
+    font-size: clamp(1.5rem, 4vw, 2rem);
     margin-bottom: 30px; 
     border-left: 5px solid var(--accent-color);
     padding-left: 15px;
   }
 
-  .declarations { padding: 100px 0; }
+  .declarations { padding: 80px 0; }
   .declarations h2 { text-align: center; font-size: 2.2rem; margin-bottom: 60px; }
 
   .card-stack {
@@ -176,10 +185,8 @@
     border-left: 4px solid var(--accent-color);
   }
 
-  .card h3 { font-size: 1.4rem; margin-bottom: 15px; }
-
   /* =========================================
-     フッター：スリム2段 ＆ 固定
+     フッター：スリム固定
   ========================================= */
   footer {
     position: fixed;
@@ -187,8 +194,7 @@
     left: 0;
     width: 100%;
     z-index: 1001;
-    margin: 0;
-    border: none;
+    background-color: var(--footer-green);
   }
 
   .footer-tier-top {
@@ -197,20 +203,23 @@
   }
 
   .footer-tier-bottom {
-    background-color: var(--footer-green);
-    padding: 10px 0; /* スリム化 */
+    padding: 10px 0;
     color: #fff;
     text-align: center;
     font-size: 0.8rem;
     font-weight: bold;
   }
 
-  @media (max-width: 1024px) {
-    .hero-text-block h1 { font-size: 1.8rem; }
-  }
+  /* フェードイン */
+  .loading-hidden { opacity: 0; }
+  .loaded { opacity: 1; transition: opacity 0.8s ease; }
+
 </style>
 </head>
-<body>
+<body class="loading-hidden">
+
+<div class="bg-fixed-layer"></div>
+<div class="bg-overlay"></div>
 
 <header>
   <div class="header-mask"></div>
@@ -226,7 +235,7 @@
   <section class="hero-fullscreen">
     <div class="container">
       <div class="hero-text-block">
-        <h1>Webページ・SNS動画を、<br>適正価格で、<br>より早く。</h1>
+        <h1>Webページ・SNS動画を、<br>適正価格で、より早く。</h1>
         <p>最新のテクノロジーを活用し、<br>地域企業様のビジュアルをサポートするデザインパートナーです。</p>
       </div>
     </div>
@@ -234,11 +243,8 @@
 
   <section class="lead">
     <div class="container">
-      <div class="text-lock lead-lock">
-        <h2>「良いものは、高くて時間がかかる」を覆す。</h2>
-        <p>私たちがAIを多用するのは、手抜きをするためではありません。<br>
-        ルーティン作業をAIに任せ、人間のリソースを「設計」と「品質」に100％集中させるためです。</p>
-      </div>
+      <h2>「良いものは、高くて時間がかかる」を覆す。</h2>
+      <p>私たちがAIを多用するのは、手抜きをするためではありません。ルーティン作業をAIに任せ、人間のリソースを「設計」と「品質」に100％集中させるためです。</p>
     </div>
   </section>
 
@@ -271,6 +277,12 @@
     </div>
   </div>
 </footer>
+
+<script>
+  window.addEventListener('load', () => {
+    document.body.classList.add('loaded');
+  });
+</script>
 
 </body>
 </html>
