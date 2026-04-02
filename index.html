@@ -15,6 +15,9 @@
     /* 消失ポイント：ロゴ＋社名のすぐ下 */
     --mask-point: 107px; 
     --footer-height: 50px; 
+
+    /* 背景画像の一括管理（ここを書き換えれば全部変わります） */
+    --main-bg-url: url('images/main-bg.png');
   }
 
   @media (max-width: 1024px) {
@@ -29,7 +32,6 @@
     background-color: #14191e;
     overflow-x: hidden;
     margin: 0;
-    /* iOSのバウンスを抑制 */
     overscroll-behavior-y: none;
   }
 
@@ -40,16 +42,11 @@
     position: fixed;
     top: 0; left: 0; width: 100%; height: 100%;
     z-index: -2;
-    background-image: url('images/main-bg.png'); 
+    background-image: var(--main-bg-url); 
     background-size: cover;
-    background-position: center center;
+    background-position: center center; /* 中央固定 */
     background-repeat: no-repeat;
-    /* スマホでのガタつき防止 */
     transform: translateZ(0);
-  }
-
-  @media (max-width: 1024px) {
-    .bg-fixed { background-image: url('images/main-bg-sp.png'); }
   }
 
   .bg-overlay {
@@ -68,24 +65,18 @@
     z-index: 100;
   }
 
-  /* ロゴの下で文字を消すための「背景と同じ」目隠し */
   .header-guard {
     position: absolute;
-    top: -500px; /* 上部へのバウンス対策：鉄壁のガード */
+    top: -500px;
     left: 0; width: 100%;
     height: calc(var(--mask-point) + 500px);
     z-index: -1;
-    background-image: url('images/main-bg.png');
+    background-image: var(--main-bg-url);
     background-size: cover;
-    background-position: center center;
-    background-attachment: fixed; /* 背景と位置を完全に同期 */
+    background-position: center center; /* 本体の背景と完全に同期 */
+    background-attachment: fixed;
   }
 
-  @media (max-width: 1024px) {
-    .header-guard { background-image: url('images/main-bg-sp.png'); }
-  }
-
-  /* 目隠し部分にも黒いヴェールをかける */
   .header-guard::after {
     content: '';
     position: absolute;
@@ -116,7 +107,7 @@
   ========================================= */
   main {
     position: relative;
-    z-index: 10; /* 目隠し(z:100)の下を潜る */
+    z-index: 10;
     padding-top: var(--mask-point);
     padding-bottom: 150px;
   }
@@ -124,7 +115,6 @@
   .container {
     margin: 0 auto;
     width: 92%;
-    /* 最大幅：PC(1000px) / タブレット(750px) */
     max-width: 1000px;
   }
 
@@ -142,9 +132,43 @@
 
   .hero-block h1 { font-size: clamp(1.8rem, 5vw, 2.8rem); line-height: 1.4; margin-bottom: 24px; }
 
-  .lead, .declarations { padding: 80px 0; }
+  /* セクション全体の余白 */
+.lead {
+  padding: 100px 0;
+}
 
-  /* 宣言タイトル：2px余白・左詰め・グラスモーフィズム */
+/* メインメッセージと業務内容の間の距離 */
+.lead-statement {
+  margin-bottom: 80px;
+}
+
+.lead-statement h2 {
+  font-size: 2rem;
+  margin-bottom: 24px;
+  color: #fff;
+}
+
+/* 業務内容のリスト（シンプルに縦に並べる） */
+.service-list {
+  display: flex;
+  flex-direction: column;
+  gap: 50px; /* 項目同士の適度な距離 */
+}
+
+.service-item h3 {
+  font-size: 1.3rem;
+  color: var(--accent-color); /* タイトルだけ色を変えてスキャナビリティを確保 */
+  margin-bottom: 10px;
+  font-family: "Yu Mincho", "Hiragino Mincho ProN", serif;
+}
+
+.service-item p {
+  font-size: 1rem;
+  line-height: 1.7;
+  color: rgba(255, 255, 255, 0.85);
+  max-width: 800px; /* 1行が長くなりすぎないよう制限 */
+}
+
   .declarations h2 {
     display: inline-block;
     padding: 2px 10px; 
@@ -157,12 +181,12 @@
     margin-bottom: 35px;
   }
 
-  .card-stack { display: flex; flex-direction: column; gap: 35px; } /* 35pxに狭めた */
+  .card-stack { display: flex; flex-direction: column; gap: 35px; }
   .card { padding-left: 25px; border-left: 4px solid var(--accent-color); }
   .card h3 { font-size: 1.3rem; margin-bottom: 8px; color: #fff; }
 
   /* =========================================
-     フッター：スリム固定
+     フッター
   ========================================= */
   footer {
     position: fixed;
@@ -185,7 +209,8 @@
 <div class="bg-overlay"></div>
 
 <header>
-  <div class="header-guard"></div> <div class="container">
+  <div class="header-guard"></div> 
+  <div class="container">
     <a href="#" class="logo-area">
       <img src="images/logo.png" alt="湘南AI企画ロゴ">
       <span>湘南AI企画</span>
@@ -196,17 +221,37 @@
 <main>
   <section class="hero-block">
     <div class="container">
-      <h1>Webページ・SNS動画を、<br>適正価格で、より早く。</h1>
-      <p>最新のテクノロジーを活用し、<br>地域企業様のビジュアルをサポートするデザインパートナーです。</p>
+      <h1>働く現場に、<br>最適をデザイン。</h1>
     </div>
   </section>
 
   <section class="lead">
-    <div class="container">
-      <h2>「良いものは、高くて時間がかかる」を覆す。</h2>
-      <p>私たちがAIを多用するのは、手抜きをするためではありません。ルーティン作業をAIに任せ、人間のリソースを「設計」と「品質」に100％集中させるためです。</p>
+  <div class="container">
+    <div class="lead-statement">
+      <h2>AIを普通に</h2>
+      <p>私たちがAIを多用するのは、手抜きをするためではありません。<br>
+      AIに向いた作業はAIに任せ、人間のリソースを「設計」と「品質」に100％集中させ、<br>
+      現代に妥当なコストカットを実現します。</p>
     </div>
-  </section>
+
+    <div class="service-list">
+      <div class="service-item">
+        <h3>Web制作</h3>
+        <p>地元の営みに、最適をデザイン。最新のAIワークフローにより、高精度なコーディングと保守性の高い設計をスピーディに提供します。</p>
+      </div>
+
+      <div class="service-item">
+        <h3>動画作成</h3>
+        <p>SNS広告から会社紹介まで。AIによる効率的なカット割りと、人の手による繊細なトーン調整で、心に刺さる映像を構築します。</p>
+      </div>
+
+      <div class="service-item">
+        <h3>情報リテラシー支援</h3>
+        <p>その時々に最適な判断を。AIツール選定から業務への定着まで、現場の「判断」をサポートする仕組み作りを伴走します。</p>
+      </div>
+    </div>
+  </div>
+</section>
 
   <section class="declarations">
     <div class="container">
