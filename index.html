@@ -44,6 +44,9 @@
     top: 0; left: 0; width: 100%; height: 100%;
     background: rgba(0, 0, 0, 0.6); 
     z-index: -1;
+    /* 変化を滑らかにするための追加 */
+    transition: background-color 0.1s linear;
+    will-change: background-color;
   }
 
   @media (max-width: 1024px) {
@@ -273,8 +276,18 @@
 <script>
   // 1. ヘッダーのスクロール消失処理（既存機能を保持）
   const header = document.getElementById('main-header');
+  const overlay = document.querySelector('.bg-overlay');
   window.addEventListener('scroll', () => {
     window.scrollY > 50 ? header.classList.add('header-hidden') : header.classList.remove('header-hidden');
+    
+  // 画面の一番下まで行ったら 0.2 (明るい)、一番上なら 0.6 (暗い) になる計算
+    const scrollHeight = 400;
+    const scrollFraction = scrollHeight > 0 ? scrollY / scrollHeight : 0;
+
+    // 透明度を 0.6 から 0.2 まで徐々に下げる
+    const opacity = 0.6 - (scrollFraction * 0.4);
+    overlay.style.backgroundColor = `rgba(0, 0, 0, ${opacity})`;
+ 
   });
 
   // 2. 変数の初期化
