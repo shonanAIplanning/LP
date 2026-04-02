@@ -271,14 +271,10 @@
 </footer>
 
 <script>
-  // 1. ヘッダーのスクロール消失処理
+  // 1. ヘッダーのスクロール消失処理（既存機能を保持）
   const header = document.getElementById('main-header');
   window.addEventListener('scroll', () => {
-    if (window.scrollY > 50) {
-      header.classList.add('header-hidden');
-    } else {
-      header.classList.remove('header-hidden');
-    }
+    window.scrollY > 50 ? header.classList.add('header-hidden') : header.classList.remove('header-hidden');
   });
 
   // 2. 変数の初期化
@@ -287,30 +283,32 @@
   const btn = document.getElementById('submit-btn');
   const check = document.getElementById('policy-check');
 
-  // 3. 同意チェックボックスの連動
+  // 3. 同意チェックボックスの連動（既存機能を保持）
   check.addEventListener('change', () => {
     btn.disabled = !check.checked;
   });
 
-  // 4. フォーム送信処理（GAS連携・エラーハンドリング強化版）
+  // 4. フォーム送信処理（エラーハンドリング・入力保持・URL修正版）
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     
-    // 送信開始：ボタンを無効化し、エラー表示を隠す
+    // 送信開始時のUI設定
     btn.disabled = true;
     btn.innerText = '送信中...';
     status.style.display = "none";
 
-    const action = "https://script.google.com/macros/s/AKfycbxrw-4bzUgWmJp_ouLVqP2DBQXLrQcEMKJo7U4f8SsV--R6eNKk9-XLG6JIivcadXAvyw/execscript.google.com/macros/s/AKfycbyS80_44ZOT0WGJwTvy6MiJBzWweSi75OQXZuXMdiGNZqUnu4CFSnPKduAhr9JikXc6/exec";
+    // 【修正済みURL】重複を削除し、正しい形式に整えました
+    const action = "https://script.google.com/macros/s/AKfycbxrw-4bzUgWmJp_ouLVqP2DBQXLrQcEMKJo7U4f8SsV--R6eNKk9-XLG6JIivcadXAvyw/exec";
 
     try {
-      const response = await fetch(action, {
+      // GASへのリクエスト実行
+      await fetch(action, {
         method: "POST",
         body: new FormData(form),
-        mode: "no-cors" // CORSエラー回避
+        mode: "no-cors" // Googleのセキュリティ制限を回避
       });
 
-      // 成功時
+      // --- 【成功時】の処理 ---
       status.innerText = "お問い合わせを送信しました。";
       status.style.color = "#5ABEE6";
       status.style.display = "block";
@@ -320,16 +318,16 @@
       btn.disabled = true;
 
     } catch (error) {
-      // 失敗時
+      // --- 【失敗時】の処理 ---
       status.innerText = "エラーが発生しました。時間を置いて再度お試しください。";
       status.style.color = "#ff6b6b";
       status.style.display = "block";
 
-      // ボタンを元に戻す（入力内容はそのまま保持される）
+      // ボタンを元に戻し、入力内容はそのまま保持されます
       btn.disabled = false;
       btn.innerText = '送信する';
 
-      // 5秒後にエラーメッセージを消す
+      // 5秒後にエラーメッセージだけを自動で消す
       setTimeout(() => {
         status.style.display = "none";
       }, 5000);
