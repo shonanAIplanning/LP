@@ -33,7 +33,7 @@
   }
 
   /* =========================================
-     背景：1枚の不動レイヤー（センター固定）
+     背景：PCは正攻法 / スマホは防御策
   ========================================= */
   .bg-fixed {
     position: fixed;
@@ -43,7 +43,9 @@
     background-size: cover;
     background-position: center center;
     background-repeat: no-repeat;
-    transform: translateZ(0);
+    /* PCでの負荷軽減 */
+    will-change: auto;
+    transform: none;
   }
 
   .bg-overlay {
@@ -53,18 +55,28 @@
     z-index: -1;
   }
 
+  @media (max-width: 1024px) {
+    .bg-fixed {
+      /* スマホのリサイズ（アドレスバー伸縮）によるガタつきを吸収する「遊び」 */
+      inset: -10px; 
+      width: calc(100% + 20px);
+      height: calc(100lvh + 20px); 
+      will-change: transform;
+      transform: translate3d(0, 0, 0);
+      -webkit-backface-visibility: hidden;
+    }
+  }
+
   /* =========================================
-     新仕様ヘッダー：スクロールで消える
+     ヘッダー：スクロールでフェードアウト
   ========================================= */
   header {
     position: fixed;
     top: 0; left: 0; width: 100%;
     z-index: 1000;
-    /* 消える時のアニメーション */
     transition: opacity 0.4s ease, transform 0.4s ease;
   }
 
-  /* スクロール時に付与されるクラス */
   .header-hidden {
     opacity: 0;
     transform: translateY(-20px);
@@ -73,15 +85,10 @@
 
   .logo-area {
     padding: 30px 0 5px 0;
-    display: flex;
-    align-items: center;
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: #fff;
-    text-decoration: none;
-    letter-spacing: 0.15em;
+    display: flex; align-items: center;
+    font-size: 1.5rem; font-weight: bold;
+    color: #fff; text-decoration: none; letter-spacing: 0.15em;
   }
-
   .logo-area img { height: 4.5rem; width: auto; margin-right: 20px; }
 
   @media (max-width: 1024px) {
@@ -96,77 +103,35 @@
     position: relative;
     z-index: 10;
     padding-top: var(--initial-gap-pc);
-    padding-bottom: 150px;
+    padding-bottom: 100px;
   }
 
   @media (max-width: 1024px) {
     main { padding-top: var(--initial-gap-sp); }
   }
 
-  .container {
-    margin: 0 auto;
-    width: 92%;
-    max-width: 1000px;
-  }
-
-  @media (max-width: 1024px) {
-    .container { max-width: 750px; }
-  }
+  .container { margin: 0 auto; width: 92%; max-width: 1000px; }
+  @media (max-width: 1024px) { .container { max-width: 750px; } }
 
   h1, h2, h3 { font-family: "Yu Mincho", "Hiragino Mincho ProN", serif; font-weight: 600; }
 
-  .hero-block {
-    height: calc(100vh - var(--initial-gap-pc));
-    display: flex;
-    align-items: center;
-  }
-
-  @media (max-width: 1024px) {
-    .hero-block { height: calc(100vh - var(--initial-gap-sp)); }
-  }
-
+  .hero-block { height: calc(100vh - var(--initial-gap-pc)); display: flex; align-items: center; }
+  @media (max-width: 1024px) { .hero-block { height: calc(100vh - var(--initial-gap-sp)); } }
   .hero-block h1 { font-size: clamp(1.8rem, 5vw, 2.8rem); line-height: 1.4; }
 
-  /* セクション全体の余白 */
-  .lead { padding: 100px 0; }
-
-  /* メインメッセージと業務内容の間の距離 */
+  .lead, .declarations, .contact-section { padding: 100px 0; }
   .lead-statement { margin-bottom: 80px; }
+  .lead-statement h2 { font-size: 2rem; margin-bottom: 24px; color: #fff; }
 
-  .lead-statement h2 {
-    font-size: 2rem;
-    margin-bottom: 24px;
-    color: #fff;
-  }
+  /* サービスリスト（シンプル縦並び） */
+  .service-list { display: flex; flex-direction: column; gap: 50px; }
+  .service-item h3 { font-size: 1.3rem; color: var(--accent-color); margin-bottom: 10px; }
+  .service-item p { font-size: 1rem; line-height: 1.7; color: rgba(255, 255, 255, 0.85); max-width: 800px; }
 
-  /* 業務内容のリスト（シンプルに縦に並べる） */
-  .service-list {
-    display: flex;
-    flex-direction: column;
-    gap: 50px;
-  }
-
-  .service-item h3 {
-    font-size: 1.3rem;
-    color: var(--accent-color);
-    margin-bottom: 10px;
-  }
-
-  .service-item p {
-    font-size: 1rem;
-    line-height: 1.7;
-    color: rgba(255, 255, 255, 0.85);
-    max-width: 800px;
-  }
-
-  .declarations h2 {
-    display: inline-block;
-    padding: 2px 10px; 
-    font-size: clamp(1.4rem, 4vw, 1.8rem);
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    border-radius: 4px;
+  .declarations h2, .contact-section h2 {
+    display: inline-block; padding: 2px 10px; font-size: clamp(1.4rem, 4vw, 1.8rem);
+    background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 4px; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
     margin-bottom: 35px;
   }
 
@@ -175,19 +140,30 @@
   .card h3 { font-size: 1.3rem; margin-bottom: 8px; color: #fff; }
 
   /* =========================================
+     お問い合わせフォーム
+  ========================================= */
+  #contact-form { max-width: 650px; display: flex; flex-direction: column; gap: 25px; }
+  .form-group { display: flex; flex-direction: column; gap: 8px; }
+  .form-group label { font-size: 0.9rem; color: var(--accent-color); font-weight: bold; }
+  .form-group input, .form-group textarea {
+    background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 4px; padding: 12px; color: #fff; font-size: 1rem;
+  }
+  .form-group input:focus, .form-group textarea:focus { outline: none; border-color: var(--accent-color); }
+  #submit-btn {
+    background: var(--accent-color); color: #fff; border: none; padding: 16px;
+    font-weight: bold; cursor: pointer; border-radius: 4px; transition: 0.3s;
+  }
+  #submit-btn:hover { opacity: 0.8; }
+  #form-status { margin-top: 15px; font-weight: bold; display: none; }
+
+  /* =========================================
      フッター
   ========================================= */
-  footer {
-    position: fixed;
-    bottom: 0; left: 0; width: 100%;
-    z-index: 200;
-  }
-
+  footer { position: fixed; bottom: 0; left: 0; width: 100%; z-index: 200; }
   .footer-tier-top { background-color: var(--accent-color); height: 8px; }
   .footer-tier-bottom { 
-    background-color: var(--footer-green);
-    padding: 10px 0;
-    text-align: center;
+    background-color: var(--footer-green); padding: 10px 0; text-align: center;
     color: #fff; font-size: 0.8rem; font-weight: bold;
   }
 </style>
@@ -227,12 +203,10 @@
           <h3>Web制作</h3>
           <p>AIを活用したワークフローにより、スピーディに安価にご提供いたします。</p>
         </div>
-
         <div class="service-item">
           <h3>動画作成</h3>
           <p>SNS広告戦力に欠かせない「PR動画」を作成いたします。</p>
         </div>
-
         <div class="service-item">
           <h3>情報リテラシー支援</h3>
           <p>その時々に最適な判断を。AIツール選定から業務への定着まで、現場の「判断」をサポートする仕組み作りを伴走します。</p>
@@ -260,6 +234,28 @@
       </div>
     </div>
   </section>
+
+  <section class="contact-section">
+    <div class="container">
+      <h2 class="glass-label">お問い合わせ</h2>
+      <form id="contact-form">
+        <div class="form-group">
+          <label>お名前</label>
+          <input type="text" name="name" required placeholder="例：斉藤 太郎">
+        </div>
+        <div class="form-group">
+          <label>メールアドレス</label>
+          <input type="email" name="email" required placeholder="example@gmail.com">
+        </div>
+        <div class="form-group">
+          <label>内容</label>
+          <textarea name="message" rows="5" required placeholder="ご相談内容を入力してください"></textarea>
+        </div>
+        <button type="submit" id="submit-btn">送信する</button>
+      </form>
+      <div id="form-status"></div>
+    </div>
+  </section>
 </main>
 
 <footer>
@@ -270,14 +266,45 @@
 </footer>
 
 <script>
+  // 1. ヘッダーのスクロール消失処理
   const header = document.getElementById('main-header');
-
   window.addEventListener('scroll', () => {
-    // 50px以上スクロールしたらヘッダーを隠す
     if (window.scrollY > 50) {
       header.classList.add('header-hidden');
     } else {
       header.classList.remove('header-hidden');
+    }
+  });
+
+  // 2. フォーム送信処理（GAS連携）
+  const form = document.getElementById('contact-form');
+  const status = document.getElementById('form-status');
+  const btn = document.getElementById('submit-btn');
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    btn.disabled = true;
+    btn.innerText = '送信中...';
+
+    // --- 【重要】ここにGASの「ウェブアプリURL」を貼り付けてください ---
+    const action = "YOUR_GAS_WEB_APP_URL_HERE"; 
+
+    try {
+      const response = await fetch(action, {
+        method: "POST",
+        body: new FormData(form)
+      });
+      status.innerText = "お問い合わせを送信しました。";
+      status.style.color = "#5ABEE6";
+      status.style.display = "block";
+      form.reset();
+    } catch (error) {
+      status.innerText = "エラーが発生しました。時間を置いて再度お試しください。";
+      status.style.color = "#ff6b6b";
+      status.style.display = "block";
+    } finally {
+      btn.disabled = false;
+      btn.innerText = '送信する';
     }
   });
 </script>
