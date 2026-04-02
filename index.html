@@ -12,16 +12,13 @@
     --text-main: #f8fafc;
     --footer-green: #B4D750;
     
-    /* 消失ポイント：ロゴ＋社名のすぐ下 */
-    --mask-point: 107px; 
+    /* 初期配置用の基準値（ロゴの高さ） */
+    --initial-gap-pc: 107px; 
+    --initial-gap-sp: 91px;
     --footer-height: 50px; 
 
-    /* 背景画像の一括管理（ここを書き換えれば全部変わります） */
+    /* 背景画像の一括管理 */
     --main-bg-url: url('images/main-bg.png');
-  }
-
-  @media (max-width: 1024px) {
-    :root { --mask-point: 91px; }
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -44,7 +41,7 @@
     z-index: -2;
     background-image: var(--main-bg-url); 
     background-size: cover;
-    background-position: center center; /* 中央固定 */
+    background-position: center center;
     background-repeat: no-repeat;
     transform: translateZ(0);
   }
@@ -57,31 +54,21 @@
   }
 
   /* =========================================
-     ヘッダー ＆ 消失用目隠し
+     新仕様ヘッダー：スクロールで消える
   ========================================= */
   header {
     position: fixed;
     top: 0; left: 0; width: 100%;
-    z-index: 100;
+    z-index: 1000;
+    /* 消える時のアニメーション */
+    transition: opacity 0.4s ease, transform 0.4s ease;
   }
 
-  .header-guard {
-    position: absolute;
-    top: -500px;
-    left: 0; width: 100%;
-    height: calc(var(--mask-point) + 500px);
-    z-index: -1;
-    background-image: var(--main-bg-url);
-    background-size: cover;
-    background-position: center center; /* 本体の背景と完全に同期 */
-    background-attachment: fixed;
-  }
-
-  .header-guard::after {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0, 0, 0, 0.6);
+  /* スクロール時に付与されるクラス */
+  .header-hidden {
+    opacity: 0;
+    transform: translateY(-20px);
+    pointer-events: none;
   }
 
   .logo-area {
@@ -108,8 +95,12 @@
   main {
     position: relative;
     z-index: 10;
-    padding-top: var(--mask-point);
+    padding-top: var(--initial-gap-pc);
     padding-bottom: 150px;
+  }
+
+  @media (max-width: 1024px) {
+    main { padding-top: var(--initial-gap-sp); }
   }
 
   .container {
@@ -125,57 +116,55 @@
   h1, h2, h3 { font-family: "Yu Mincho", "Hiragino Mincho ProN", serif; font-weight: 600; }
 
   .hero-block {
-    height: calc(100vh - var(--mask-point));
+    height: calc(100vh - var(--initial-gap-pc));
     display: flex;
     align-items: center;
   }
 
-  .hero-block h1 { font-size: clamp(1.8rem, 5vw, 2.8rem); line-height: 1.4; margin-bottom: 24px; }
+  @media (max-width: 1024px) {
+    .hero-block { height: calc(100vh - var(--initial-gap-sp)); }
+  }
+
+  .hero-block h1 { font-size: clamp(1.8rem, 5vw, 2.8rem); line-height: 1.4; }
 
   /* セクション全体の余白 */
-.lead {
-  padding: 100px 0;
-}
+  .lead { padding: 100px 0; }
 
-/* メインメッセージと業務内容の間の距離 */
-.lead-statement {
-  margin-bottom: 80px;
-}
+  /* メインメッセージと業務内容の間の距離 */
+  .lead-statement { margin-bottom: 80px; }
 
-.lead-statement h2 {
-  font-size: 2rem;
-  margin-bottom: 24px;
-  color: #fff;
-}
+  .lead-statement h2 {
+    font-size: 2rem;
+    margin-bottom: 24px;
+    color: #fff;
+  }
 
-/* 業務内容のリスト（シンプルに縦に並べる） */
-.service-list {
-  display: flex;
-  flex-direction: column;
-  gap: 50px; /* 項目同士の適度な距離 */
-}
+  /* 業務内容のリスト（シンプルに縦に並べる） */
+  .service-list {
+    display: flex;
+    flex-direction: column;
+    gap: 50px;
+  }
 
-.service-item h3 {
-  font-size: 1.3rem;
-  color: var(--accent-color); /* タイトルだけ色を変えてスキャナビリティを確保 */
-  margin-bottom: 10px;
-  font-family: "Yu Mincho", "Hiragino Mincho ProN", serif;
-}
+  .service-item h3 {
+    font-size: 1.3rem;
+    color: var(--accent-color);
+    margin-bottom: 10px;
+  }
 
-.service-item p {
-  font-size: 1rem;
-  line-height: 1.7;
-  color: rgba(255, 255, 255, 0.85);
-  max-width: 800px; /* 1行が長くなりすぎないよう制限 */
-}
+  .service-item p {
+    font-size: 1rem;
+    line-height: 1.7;
+    color: rgba(255, 255, 255, 0.85);
+    max-width: 800px;
+  }
 
   .declarations h2 {
     display: inline-block;
     padding: 2px 10px; 
     font-size: clamp(1.4rem, 4vw, 1.8rem);
     background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
     border: 1px solid rgba(255, 255, 255, 0.15);
     border-radius: 4px;
     margin-bottom: 35px;
@@ -208,8 +197,7 @@
 <div class="bg-fixed"></div>
 <div class="bg-overlay"></div>
 
-<header>
-  <div class="header-guard"></div> 
+<header id="main-header">
   <div class="container">
     <a href="#" class="logo-area">
       <img src="images/logo.png" alt="湘南AI企画ロゴ">
@@ -226,32 +214,32 @@
   </section>
 
   <section class="lead">
-  <div class="container">
-    <div class="lead-statement">
-      <h2>AIを普通に</h2>
-      <p>私たちがAIを多用するのは、手抜きをするためではありません。<br>
-      AIに向いた作業はAIに任せ、人間のリソースを「設計」と「品質」に100％集中させ、<br>
-      現代に妥当なコストカットを実現します。</p>
+    <div class="container">
+      <div class="lead-statement">
+        <h2>AIを普通に</h2>
+        <p>私たちがAIを多用するのは、手抜きをするためではありません。<br>
+        AIに向いた作業はAIに任せ、人間のリソースを「設計」と「品質」に100％集中させ、<br>
+        現代に妥当なコストカットを実現します。</p>
+      </div>
+
+      <div class="service-list">
+        <div class="service-item">
+          <h3>Web制作</h3>
+          <p>AIを活用したワークフローにより、スピーディに安価にご提供いたします。</p>
+        </div>
+
+        <div class="service-item">
+          <h3>動画作成</h3>
+          <p>SNS広告戦力に欠かせない「PR動画」を作成いたします。</p>
+        </div>
+
+        <div class="service-item">
+          <h3>情報リテラシー支援</h3>
+          <p>その時々に最適な判断を。AIツール選定から業務への定着まで、現場の「判断」をサポートする仕組み作りを伴走します。</p>
+        </div>
+      </div>
     </div>
-
-    <div class="service-list">
-      <div class="service-item">
-        <h3>Web制作</h3>
-        <p>地元の営みに、最適をデザイン。最新のAIワークフローにより、高精度なコーディングと保守性の高い設計をスピーディに提供します。</p>
-      </div>
-
-      <div class="service-item">
-        <h3>動画作成</h3>
-        <p>SNS広告から会社紹介まで。AIによる効率的なカット割りと、人の手による繊細なトーン調整で、心に刺さる映像を構築します。</p>
-      </div>
-
-      <div class="service-item">
-        <h3>情報リテラシー支援</h3>
-        <p>その時々に最適な判断を。AIツール選定から業務への定着まで、現場の「判断」をサポートする仕組み作りを伴走します。</p>
-      </div>
-    </div>
-  </div>
-</section>
+  </section>
 
   <section class="declarations">
     <div class="container">
@@ -280,6 +268,19 @@
     <p>&copy; 2026 湘南AI企画</p>
   </div>
 </footer>
+
+<script>
+  const header = document.getElementById('main-header');
+
+  window.addEventListener('scroll', () => {
+    // 50px以上スクロールしたらヘッダーを隠す
+    if (window.scrollY > 50) {
+      header.classList.add('header-hidden');
+    } else {
+      header.classList.remove('header-hidden');
+    }
+  });
+</script>
 
 </body>
 </html>
