@@ -1,128 +1,164 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>湘南AI企画 | 働く現場に、最適をデザイン。</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>湘南AI企画</title>
 
-  <style>
-    :root {
-      --primary-color: #ffffff;
-      --accent-color: #5ABEE6; 
-      --text-main: #f8fafc;
-      --footer-green: #B4D750;
-      --initial-gap-pc: 107px; 
-      --initial-gap-sp: 91px;
-      --main-bg-url: url('images/main-bg.png');
-    }
+<style>
+  :root {
+    --primary-color: #ffffff;
+    --accent-color: #5ABEE6; 
+    --text-main: #f8fafc;
+    --footer-green: #B4D750;
+    --initial-gap-pc: 107px; 
+    --initial-gap-sp: 91px;
+    --footer-height: 50px; 
+    --main-bg-url: url('images/main-bg.png');
+  }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    
-    body {
-      font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
-      color: var(--text-main);
-      background-color: #14191e;
-      overflow-x: hidden;
-      line-height: 1.6;
-    }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  
+  body {
+    font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
+    color: var(--text-main);
+    background-color: #14191e;
+    overflow-x: hidden;
+    margin: 0;
+    overscroll-behavior-y: none;
+  }
 
-    /* 背景設定 */
+  /* 背景設定 */
+  .bg-fixed {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    z-index: -2;
+    background-image: var(--main-bg-url); 
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+  }
+
+  .bg-overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.6); 
+    z-index: -1;
+  }
+
+  @media (max-width: 1024px) {
     .bg-fixed {
-      position: fixed;
-      top: 0; left: 0; width: 100%; height: 100%;
-      z-index: -2;
-      background-image: var(--main-bg-url); 
-      background-size: cover;
-      background-position: center center;
-      background-repeat: no-repeat;
+      inset: -10px; 
+      width: calc(100% + 20px);
+      height: calc(100lvh + 20px); 
+      will-change: transform;
+      transform: translate3d(0, 0, 0);
+      -webkit-backface-visibility: hidden;
     }
+  }
 
-    .bg-overlay {
-      position: fixed;
-      top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0, 0, 0, 0.6); 
-      z-index: -1;
-    }
+  /* ヘッダー */
+  header {
+    position: fixed;
+    top: 0; left: 0; width: 100%;
+    z-index: 1000;
+    transition: opacity 0.4s ease, transform 0.4s ease;
+  }
 
-    /* ヘッダー */
-    header {
-      position: fixed;
-      top: 0; left: 0; width: 100%;
-      z-index: 1000;
-      transition: opacity 0.4s ease, transform 0.4s ease;
-    }
+  .header-hidden {
+    opacity: 0;
+    transform: translateY(-20px);
+    pointer-events: none;
+  }
 
-    .header-hidden {
-      opacity: 0;
-      transform: translateY(-20px);
-      pointer-events: none;
-    }
+  .logo-area {
+    padding: 30px 0 5px 0;
+    display: flex; align-items: center;
+    font-size: 1.5rem; font-weight: bold;
+    color: #fff; text-decoration: none; letter-spacing: 0.15em;
+  }
+  .logo-area img { height: 4.5rem; width: auto; margin-right: 20px; }
 
-    .logo-area {
-      padding: 30px 0 5px 0;
-      display: flex; align-items: center;
-      font-size: 1.5rem; font-weight: bold;
-      color: #fff; text-decoration: none; letter-spacing: 0.15em;
-    }
-    .logo-area img { height: 4.5rem; width: auto; margin-right: 20px; }
+  @media (max-width: 1024px) {
+    .logo-area { padding: 20px 0 5px 0; font-size: 1.2rem; }
+    .logo-area img { height: 3.5rem; }
+  }
 
-    /* レイアウト */
-    .container { margin: 0 auto; width: 92%; max-width: 1000px; }
-    main { position: relative; z-index: 10; padding-top: var(--initial-gap-pc); padding-bottom: 150px; }
+  /* コンテンツ */
+  main {
+    position: relative;
+    z-index: 10;
+    padding-top: var(--initial-gap-pc);
+    padding-bottom: 100px;
+  }
 
-    section { padding: 100px 0; }
-    h1, h2, h3 { font-family: "Yu Mincho", "Hiragino Mincho ProN", serif; font-weight: 600; }
+  @media (max-width: 1024px) {
+    main { padding-top: var(--initial-gap-sp); }
+  }
 
-    .hero-block { height: calc(100vh - var(--initial-gap-pc)); display: flex; align-items: center; padding: 0; }
-    .hero-block h1 { font-size: clamp(1.8rem, 5vw, 2.8rem); line-height: 1.4; }
+  .container { margin: 0 auto; width: 92%; max-width: 1000px; }
+  @media (max-width: 1024px) { .container { max-width: 750px; } }
 
-    .accent-label {
-      display: inline-block; padding: 2px 10px; font-size: clamp(1.4rem, 4vw, 1.8rem);
-      background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.15);
-      border-radius: 4px; backdrop-filter: blur(8px); margin-bottom: 35px;
-    }
+  h1, h2, h3 { font-family: "Yu Mincho", "Hiragino Mincho ProN", serif; font-weight: 600; }
 
-    /* サービスリスト・カード */
-    .service-list { display: flex; flex-direction: column; gap: 50px; }
-    .service-item h3 { font-size: 1.3rem; color: var(--accent-color); margin-bottom: 10px; }
-    .card-stack { display: flex; flex-direction: column; gap: 35px; }
-    .card { padding-left: 25px; border-left: 4px solid var(--accent-color); }
+  .hero-block { height: calc(100vh - var(--initial-gap-pc)); display: flex; align-items: center; }
+  @media (max-width: 1024px) { .hero-block { height: calc(100vh - var(--initial-gap-sp)); } }
+  .hero-block h1 { font-size: clamp(1.8rem, 5vw, 2.8rem); line-height: 1.4; }
 
-    /* お問い合わせフォーム */
-    #contact-form { max-width: 650px; display: flex; flex-direction: column; gap: 20px; }
-    .form-group { display: flex; flex-direction: column; gap: 8px; }
-    .form-group label { font-size: 0.9rem; color: var(--accent-color); font-weight: bold; }
-    .form-group input, .form-group textarea {
-      background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.2);
-      border-radius: 4px; padding: 12px; color: #fff; font-size: 1rem;
-    }
-    
-    /* 規約同意エリア */
-    .policy-box {
-      background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 255, 255, 0.1);
-      padding: 15px; border-radius: 4px; font-size: 0.8rem; height: 120px; overflow-y: scroll;
-      color: rgba(255, 255, 255, 0.7); margin-bottom: 10px;
-    }
-    .checkbox-group { display: flex; align-items: center; gap: 10px; font-size: 0.9rem; cursor: pointer; }
-    .checkbox-group input { width: 18px; height: 18px; cursor: pointer; }
+  .lead, .declarations, .contact-section { padding: 100px 0; }
+  .lead-statement { margin-bottom: 80px; }
+  .lead-statement h2 { font-size: 2rem; margin-bottom: 24px; color: #fff; }
 
-    #submit-btn {
-      background: var(--accent-color); color: #fff; border: none; padding: 16px;
-      font-weight: bold; cursor: pointer; border-radius: 4px; transition: 0.3s;
-      margin-top: 10px;
-    }
-    #submit-btn:disabled { background: #555; cursor: not-allowed; }
-    #form-status { margin-top: 15px; font-weight: bold; display: none; }
+  .service-list { display: flex; flex-direction: column; gap: 50px; }
+  .service-item h3 { font-size: 1.3rem; color: var(--accent-color); margin-bottom: 10px; }
+  .service-item p { font-size: 1rem; line-height: 1.7; color: rgba(255, 255, 255, 0.85); max-width: 800px; }
 
-    footer { position: fixed; bottom: 0; left: 0; width: 100%; z-index: 200; }
-    .footer-tier-top { background-color: var(--accent-color); height: 8px; }
-    .footer-tier-bottom { background-color: var(--footer-green); padding: 10px 0; text-align: center; color: #fff; font-size: 0.8rem; font-weight: bold; }
+  .declarations h2, .contact-section h2 {
+    display: inline-block; padding: 2px 10px; font-size: clamp(1.4rem, 4vw, 1.8rem);
+    background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 4px; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+    margin-bottom: 35px;
+  }
 
-    @media (max-width: 1024px) {
-      main { padding-top: var(--initial-gap-sp); }
-      .hero-block { height: calc(100vh - var(--initial-gap-sp)); }
-    }
-  </style>
+  .card-stack { display: flex; flex-direction: column; gap: 35px; }
+  .card { padding-left: 25px; border-left: 4px solid var(--accent-color); }
+  .card h3 { font-size: 1.3rem; margin-bottom: 8px; color: #fff; }
+
+  /* お問い合わせフォーム */
+  #contact-form { max-width: 650px; display: flex; flex-direction: column; gap: 25px; }
+  .form-group { display: flex; flex-direction: column; gap: 8px; }
+  .form-group label { font-size: 0.9rem; color: var(--accent-color); font-weight: bold; }
+  .form-group input, .form-group textarea {
+    background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 4px; padding: 12px; color: #fff; font-size: 1rem;
+  }
+  .form-group input:focus, .form-group textarea:focus { outline: none; border-color: var(--accent-color); }
+
+  /* 規約同意エリア（追加） */
+  .policy-box {
+    background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 15px; border-radius: 4px; font-size: 0.8rem; height: 110px; overflow-y: scroll;
+    color: rgba(255, 255, 255, 0.7); line-height: 1.5;
+  }
+  .checkbox-group { display: flex; align-items: center; gap: 10px; font-size: 0.9rem; cursor: pointer; }
+  .checkbox-group input { width: 18px; height: 18px; cursor: pointer; }
+
+  #submit-btn {
+    background: var(--accent-color); color: #fff; border: none; padding: 16px;
+    font-weight: bold; cursor: pointer; border-radius: 4px; transition: 0.3s;
+  }
+  #submit-btn:hover:not(:disabled) { opacity: 0.8; }
+  #submit-btn:disabled { background: #555; cursor: not-allowed; }
+  #form-status { margin-top: 15px; font-weight: bold; display: none; }
+
+  /* フッター */
+  footer { position: fixed; bottom: 0; left: 0; width: 100%; z-index: 200; }
+  .footer-tier-top { background-color: var(--accent-color); height: 8px; }
+  .footer-tier-bottom { 
+    background-color: var(--footer-green); padding: 10px 0; text-align: center;
+    color: #fff; font-size: 0.8rem; font-weight: bold;
+  }
+</style>
 </head>
 <body>
 
@@ -147,26 +183,57 @@
 
   <section class="lead">
     <div class="container">
-      <h2 class="accent-label">AIを普通に</h2>
-      <p>私たちがAIを多用するのは、手抜きをするためではありません。<br>
-      AIに向いた作業はAIに任せ、人間のリソースを「設計」と「品質」に100％集中させ、<br>
-      現代に妥当なコストカットを実現します。</p>
-      <div class="service-list" style="margin-top: 50px;">
-        <div class="service-item"><h3>Web制作</h3><p>AIワークフローによりスピーディかつ適正価格で提供します。</p></div>
-        <div class="service-item"><h3>動画作成</h3><p>SNS広告やPRに欠かせない動画コンテンツを制作します。</p></div>
-        <div class="service-item"><h3>情報リテラシー支援</h3><p>現場の「判断」をサポートする仕組み作りを伴走します。</p></div>
+      <div class="lead-statement">
+        <h2>AIを普通に</h2>
+        <p>私たちがAIを多用するのは、手抜きをするためではありません。<br>
+        AIに向いた作業はAIに任せ、人間のリソースを「設計」と「品質」に100％集中させ、<br>
+        現代に妥当なコストカットを実現します。</p>
+      </div>
+
+      <div class="service-list">
+        <div class="service-item">
+          <h3>Web制作</h3>
+          <p>AIを活用したワークフローにより、スピーディに安価にご提供いたします。</p>
+        </div>
+        <div class="service-item">
+          <h3>動画作成</h3>
+          <p>SNS広告戦力に欠かせない「PR動画」を作成いたします。</p>
+        </div>
+        <div class="service-item">
+          <h3>情報リテラシー支援</h3>
+          <p>その時々に最適な判断を。AIツール選定から業務への定着まで、現場の「判断」をサポートする仕組み作りを伴走します。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="declarations">
+    <div class="container">
+      <h2>3つのAI安心宣言</h2>
+      <div class="card-stack">
+        <div class="card">
+          <h3>1. 生成AIの出力結果をそのまま納品することは一切ありません。</h3>
+          <p>商用利用がクリアされた環境のみに限定し、最終成果物は必ず人間のクリエイターが再構築を行います。</p>
+        </div>
+        <div class="card">
+          <h3>2. 厳格な遮断</h3>
+          <p>御社からお預かりした内部情報を、AIの学習データとして利用することは絶対にありません。</p>
+        </div>
+        <div class="card">
+          <h3>3. 品質保証</h3>
+          <p>AIはあくまで「優秀なアシスタント」であり、ディレクションと最終決定権は人間が持ちます。</p>
+        </div>
       </div>
     </div>
   </section>
 
   <section class="contact-section">
     <div class="container">
-      <h2 class="accent-label">お問い合わせ</h2>
-      
+      <h2 class="glass-label">お問い合わせ</h2>
       <form id="contact-form">
         <div class="form-group">
           <label>お名前</label>
-          <input type="text" name="name" required placeholder="例：斉藤 太郎">
+          <input type="text" name="name" required placeholder="例：伊勢 原太郎">
         </div>
         <div class="form-group">
           <label>メールアドレス</label>
@@ -186,7 +253,7 @@
 
         <label class="checkbox-group">
           <input type="checkbox" id="policy-check" required>
-          上記の免責事項およびプライバシーポリシーに同意する
+          免責事項およびプライバシーポリシーに同意する
         </label>
 
         <button type="submit" id="submit-btn" disabled>送信する</button>
@@ -198,52 +265,76 @@
 
 <footer>
   <div class="footer-tier-top"></div>
-  <div class="footer-tier-bottom"><p>&copy; 2026 湘南AI企画</p></div>
+  <div class="footer-tier-bottom">
+    <p>&copy; 2026 湘南AI企画</p>
+  </div>
 </footer>
 
 <script>
-  // 1. ヘッダーのスクロール消失
+  // 1. ヘッダーのスクロール消失処理
   const header = document.getElementById('main-header');
   window.addEventListener('scroll', () => {
-    window.scrollY > 50 ? header.classList.add('header-hidden') : header.classList.remove('header-hidden');
+    if (window.scrollY > 50) {
+      header.classList.add('header-hidden');
+    } else {
+      header.classList.remove('header-hidden');
+    }
   });
 
-  // 2. 同意チェックボックスの制御
-  const check = document.getElementById('policy-check');
+  // 2. 変数の初期化
+  const form = document.getElementById('contact-form');
+  const status = document.getElementById('form-status');
   const btn = document.getElementById('submit-btn');
+  const check = document.getElementById('policy-check');
+
+  // 3. 同意チェックボックスの連動
   check.addEventListener('change', () => {
     btn.disabled = !check.checked;
   });
 
-  // 3. フォーム送信処理（GAS連携）
-  const form = document.getElementById('contact-form');
-  const status = document.getElementById('form-status');
-
+  // 4. フォーム送信処理（GAS連携・エラーハンドリング強化版）
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
+    
+    // 送信開始：ボタンを無効化し、エラー表示を隠す
     btn.disabled = true;
     btn.innerText = '送信中...';
+    status.style.display = "none";
 
-    // 斉藤様が発行したウェブアプリURL
-    const action = "https://script.google.com/macros/s/AKfycbyS80_44ZOT0WGJwTvy6MiJBzWweSi75OQXZuXMdiGNZqUnu4CFSnPKduAhr9JikXc6/exec"; 
+    const action = "https://script.google.com/macros/s/AKfycbyS80_44ZOT0WGJwTvy6MiJBzWweSi75OQXZuXMdiGNZqUnu4CFSnPKduAhr9JikXc6/exec";
 
     try {
       const response = await fetch(action, {
         method: "POST",
-        body: new FormData(form)
+        body: new FormData(form),
+        mode: "no-cors" // CORSエラー回避
       });
-      status.innerText = "お問い合わせを送信しました。me@saitoryohei.com 宛に通知が届きます。";
+
+      // 成功時
+      status.innerText = "お問い合わせを送信しました。";
       status.style.color = "#5ABEE6";
       status.style.display = "block";
-      form.reset();
-      btn.disabled = true; // 送信後はチェックをリセット
+      
+      form.reset();      // 成功時のみ入力をクリア
+      btn.innerText = '送信完了';
+      btn.disabled = true;
+
     } catch (error) {
+      // 失敗時
       status.innerText = "エラーが発生しました。時間を置いて再度お試しください。";
       status.style.color = "#ff6b6b";
       status.style.display = "block";
+
+      // ボタンを元に戻す（入力内容はそのまま保持される）
       btn.disabled = false;
-    } finally {
-      btn.innerText = '送信完了';
+      btn.innerText = '送信する';
+
+      // 5秒後にエラーメッセージを消す
+      setTimeout(() => {
+        status.style.display = "none";
+      }, 5000);
+
+      console.error('Submission error:', error);
     }
   });
 </script>
