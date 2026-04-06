@@ -28,7 +28,6 @@
     overscroll-behavior-y: none;
   }
 
-  /* 背景固定設定 */
   .bg-fixed {
     position: fixed;
     top: 0; left: 0; width: 100%; height: 100%;
@@ -47,7 +46,6 @@
     transition: background-color 0.1s linear;
   }
 
-  /* ヘッダー */
   header {
     position: fixed;
     top: 0; left: 0; width: 100%;
@@ -63,7 +61,6 @@
   }
   .logo-area img { height: 4.5rem; width: auto; margin-right: 20px; }
 
-  /* メインコンテンツ */
   main {
     position: relative;
     z-index: 10;
@@ -76,78 +73,88 @@
   .hero-block { height: calc(100vh - var(--initial-gap-pc)); display: flex; align-items: center; }
   .lead, .declarations, .contact-section { padding: 100px 0; }
 
-  /* --- 1. 【重要】文字背景の密着とマーカー化の指定 --- */
-  .hero-block .container,
-  .lead-statement,
-  .service-item,
-  .card {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start; /* 常に文字の頭に合わせ、横幅を広げない */
-    background: none !important;
-    backdrop-filter: none !important;
-  }
-
+  /* --- 1. 背景の密着（重なりなし・改行フィット） --- */
+  
+  /* ヒーロー、サービス項目、カードのテキスト：個別に文字幅へ合わせつつ密着 */
   .hero-block h1,
-  .lead-statement h1,
-  .lead-statement p,
   .service-item h3,
   .service-item p,
   .card p {
     background-color: rgba(0, 0, 0, 0.45);
     backdrop-filter: blur(4px);
     -webkit-backdrop-filter: blur(4px);
-    display: inline; /* これにより改行後の「だらだら」を解消 */
-    box-decoration-break: clone;
-    -webkit-box-decoration-break: clone;
+    display: table; /* 文字の幅にジャストフィットさせる */
     padding: 2px 8px;
-    margin: 0 !important; /* 上下マージンを完全除去して密着 */
-    line-height: 1.2;     /* 背景同士を連結させるため低めに設定 */
-    border-radius: 2px;
+    margin: 0;      /* 隙間も重なりも作らない */
+    line-height: 1.3;
+    border-radius: 0;
   }
 
-  /* セクション間のレイアウト調整 */
-  .lead-statement { margin-bottom: 60px; }
-  .declarations .lead-statement { margin-bottom: 15px !important; } /* 見出しと本文を近づける */
+  /* --- 2. Lead Statement：一括背景ブロック --- */
+  .lead-statement {
+    background-color: rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    padding: 24px;
+    margin-bottom: 60px;
+    width: fit-content;
+    max-width: 100%;
+  }
+
+  .lead-statement h1,
+  .lead-statement p {
+    background: none;      /* 子要素の背景は消去 */
+    backdrop-filter: none;
+    display: block;
+    margin: 0;
+  }
+  .lead-statement h1 { margin-bottom: 15px; font-size: 2rem; }
+  .lead-statement p { line-height: 1.8; } /* 行間をゆったり確保 */
+
+  /* レイアウト微調整 */
+  .declarations .lead-statement { margin-bottom: 20px; } 
+  .service-item h3 { color: var(--accent-color); font-size: 1.3rem; }
   .service-list { display: flex; flex-direction: column; gap: 40px; }
   .card-stack { display: flex; flex-direction: column; gap: 30px; }
-  .card { border-left: 4px solid var(--accent-color); padding-left: 15px !important; }
+  .card { border-left: 4px solid var(--accent-color); padding-left: 15px; }
 
-  /* フォントサイズ */
-  .hero-block h1 { font-size: clamp(1.8rem, 5vw, 2.8rem); }
-  .lead-statement h1 { font-size: 2rem; }
-  .service-item h3 { font-size: 1.3rem; color: var(--accent-color); }
-
-  /* --- 2. お問い合わせセクションの一体化 --- */
+  /* --- 3. お問い合わせセクションとフォームの角丸 --- */
   .contact-box {
-    background-color: rgba(0, 0, 0, 0.05);
+    background-color: rgba(0, 0, 0, 0.45);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    padding: 10px;
-    border-radius: 0px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 40px;
+    border: 0px solid rgba(255, 255, 255, 0.1);
     max-width: 800px;
     margin: 0 auto;
+    border-radius: 0; /* 箱自体はスクエアを維持 */
   }
 
   .contact-box h3 {
     display: inline-block;
     color: var(--accent-color);
-    margin-bottom: 15px; /* フォームとの隙間を短縮 */
+    margin-bottom: 20px;
     font-size: clamp(1.4rem, 4vw, 1.8rem);
   }
 
   #contact-form { display: flex; flex-direction: column; gap: 20px; }
-
-  /* ラベルを内部に配置 */
   .form-group { position: relative; }
+  
+  /* フォーム入力欄のラウンド設定 */
+  .form-group input, 
+  .form-group textarea {
+    background: rgba(255, 255, 255, 0.05); 
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px; /* 指定のラウンド適用 */
+    padding: 22px 12px 8px 12px; 
+    color: #fff; 
+    font-size: 1rem; 
+    width: 100%;
+  }
+
   .form-group label {
     position: absolute; top: 6px; left: 12px; font-size: 0.75rem;
     color: var(--accent-color); font-weight: bold; z-index: 1; pointer-events: none;
-  }
-  .form-group input, .form-group textarea {
-    background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 4px; padding: 22px 12px 8px 12px; color: #fff; font-size: 1rem; width: 100%;
   }
 
   .policy-box {
@@ -156,29 +163,22 @@
     color: rgba(255, 255, 255, 0.7); line-height: 1.5; margin-bottom: 10px;
   }
 
-  /* チェックボックスと送信ボタンの並列化 */
   .form-actions {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 20px;
+    display: flex; align-items: center; justify-content: space-between; gap: 20px;
   }
   .checkbox-group { display: flex; align-items: center; gap: 10px; font-size: 0.85rem; cursor: pointer; flex: 1; }
-  .checkbox-group input { width: 18px; height: 18px; cursor: pointer; }
-
+  
   #submit-btn {
     background: var(--accent-color); color: #fff; border: none; padding: 14px 40px;
-    font-weight: bold; cursor: pointer; border-radius: 4px; transition: 0.3s; white-space: nowrap;
+    font-weight: bold; cursor: pointer; border-radius: 8px; /* ボタンも連動して角丸に */
+    transition: 0.3s; white-space: nowrap;
   }
-  #submit-btn:hover:not(:disabled) { opacity: 0.8; }
-  #submit-btn:disabled { background: #555; cursor: not-allowed; }
 
   @media (max-width: 600px) {
     .form-actions { flex-direction: column; align-items: flex-start; }
     #submit-btn { width: 100%; }
   }
 
-  /* フッター */
   footer { position: fixed; bottom: 0; left: 0; width: 100%; z-index: 200; }
   .footer-tier-top { background-color: var(--accent-color); height: 8px; }
   .footer-tier-bottom { background-color: var(--footer-green); padding: 10px 0; text-align: center; color: #fff; font-size: 0.8rem; font-weight: bold; }
@@ -225,7 +225,7 @@
         </div>
         <div class="service-item">
           <h3>ロゴマーク作成</h3>
-          <p>事業の哲学を体現する「ロゴマーク」を作成いたします。<br><span style="color:red;">※この作業ではAIを一切使用しません</span></p>
+          <p>事業の哲学を体現する「ロゴマーク」を作成いたします。<br><small style="color:red;">※この作業ではAIを一切使用しません</small></p>
         </div> 
         <div class="service-item">
           <h3>情報リテラシー支援</h3>
@@ -302,32 +302,10 @@
   });
 
   const form = document.getElementById('contact-form');
-  const status = document.getElementById('form-status');
   const btn = document.getElementById('submit-btn');
   const check = document.getElementById('policy-check');
 
   check.addEventListener('change', () => btn.disabled = !check.checked);
-
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    btn.disabled = true;
-    btn.innerText = '送信中...';
-    const action = "https://script.google.com/macros/s/AKfycbxrw-4bzUgWmJp_ouLVqP2DBQXLrQcEMKJo7U4f8SsV--R6eNKk9-XLG6JIivcadXAvyw/exec";
-    try {
-      await fetch(action, { method: "POST", body: new FormData(form), mode: "no-cors" });
-      status.innerText = "お問い合わせを送信しました。";
-      status.style.color = "#5ABEE6";
-      status.style.display = "block";
-      form.reset();
-      btn.innerText = '送信完了';
-    } catch (error) {
-      status.innerText = "エラーが発生しました。再度お試しください。";
-      status.style.color = "#ff6b6b";
-      status.style.display = "block";
-      btn.disabled = false;
-      btn.innerText = '送信する';
-    }
-  });
 </script>
 
 </body>
