@@ -55,13 +55,31 @@
     transition: opacity 0.4s ease, transform 0.4s ease;
   }
   .header-hidden { opacity: 0; transform: translateY(-20px); pointer-events: none; }
+  
   .logo-area {
-    padding: 30px 0 5px 0;
+    padding: 0px 0 5px 0;
     display: flex; align-items: center;
-    font-size: 1.5rem; font-weight: bold;
+    font-size: 1rem; font-weight: bold;
     color: #fff; text-decoration: none; letter-spacing: 0.15em;
+    transform: translateX(-20px); /* ★ここを追加（マイナスで左、プラスで右へ移動） */
   }
-  .logo-area img { height: 4.5rem; width: auto; margin-right: 20px; }
+
+  /* 画像単体のコントロール用 */
+  .logo-image { 
+    height: 14rem; 
+    width: auto; 
+    margin-right: 0px; 
+    /* 下記数値を変更して画像を上下に微調整（例: -5px, 5px） */
+    transform: translateY(-7px); 
+  }
+
+  /* テキスト単体のコントロール用 */
+  .logo-text {
+    display: inline-block; 
+    line-height: 1; 
+    /* 下記数値を変更してテキストを上下に微調整（例: -5px, 5px） */
+    transform: translateY(18px); 
+  }
 
   main {
     position: relative;
@@ -210,8 +228,8 @@
 <header id="main-header">
   <div class="container">
     <a href="#" class="logo-area">
-      <img src="images/logo.png" alt="湘南AI企画ロゴ">
-      <span>湘南AI企画</span>
+      <img src="images/saiplogo.png" alt="湘南AI企画ロゴ" class="logo-image">
+      <span class="logo-text">湘南AI企画</span>
     </a>
   </div>
 </header>
