@@ -28,6 +28,7 @@
     overscroll-behavior-y: none;
   }
 
+  /* 背景固定設定 */
   .bg-fixed {
     position: fixed;
     top: 0; left: 0; width: 100%; height: 100%;
@@ -38,20 +39,11 @@
     background-repeat: no-repeat;
   }
 
-  /* モバイルでの画像ガタつき防止：JSで高さを制御するため初期値を設定 */
-  @media (max-width: 1024px) {
-    .bg-fixed {
-      height: 100vh; /* JSが読み込まれるまでのフォールバック */
-      will-change: transform;
-      transform: translate3d(0, 0, 0);
-      -webkit-backface-visibility: hidden;
-    }
-  }
-
+  /* 初期状態でしっかり暗く設定 */
   .bg-overlay {
     position: fixed;
     top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0, 0, 0, 0.6); 
+    background-color: rgba(0, 0, 0, 0.8); 
     z-index: -1;
     transition: background-color 0.1s linear;
   }
@@ -83,29 +75,33 @@
   .hero-block { height: calc(100vh - var(--initial-gap-pc)); display: flex; align-items: center; }
   .lead, .declarations, .contact-section { padding: 100px 0; }
 
+  /* --- 文字背景の密着とマーカー化の指定 --- */
+
+  /* ヒーローのh1：背景を完全に除去 */
   .hero-block h1 {
     background: none;
     backdrop-filter: none;
-    -webkit-backdrop-filter: none;
     display: block;
     margin: 0;
     line-height: 1.4;
     font-size: clamp(1.8rem, 5vw, 2.8rem);
   }
 
+  /* サービス項目、カードのテキスト：個別に文字幅へ合わせつつ密着 */
   .service-item h3,
   .service-item p,
   .card p {
     background-color: rgba(0, 0, 0, 0.45);
     backdrop-filter: blur(4px);
     -webkit-backdrop-filter: blur(4px);
-    display: table;
+    display: table; 
     padding: 2px 8px;
     margin: 0;
     line-height: 1.3;
     border-radius: 0;
   }
 
+  /* Lead Statement：一括背景ブロック（行間をとる箇所） */
   .lead-statement {
     background-color: rgba(0, 0, 0, 0.45);
     backdrop-filter: blur(4px);
@@ -126,17 +122,19 @@
   .lead-statement h1 { margin-bottom: 15px; font-size: 2rem; }
   .lead-statement p { line-height: 1.8; }
 
+  /* レイアウト微調整 */
   .declarations .lead-statement { margin-bottom: 20px; } 
   .service-item h3 { color: var(--accent-color); font-size: 1.3rem; }
   .service-list { display: flex; flex-direction: column; gap: 40px; }
   .card-stack { display: flex; flex-direction: column; gap: 30px; }
   .card { border-left: 4px solid var(--accent-color); padding-left: 15px; }
 
+  /* --- お問い合わせセクション --- */
   .contact-box {
     background-color: rgba(0, 0, 0, 0.45);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    padding: 10px;
+    padding: 30px;
     max-width: 800px;
     margin: 0 auto;
     border-radius: 0;
@@ -152,11 +150,12 @@
   #contact-form { display: flex; flex-direction: column; gap: 20px; }
   .form-group { position: relative; }
   
+  /* フォーム入力欄のラウンド設定（8px） */
   .form-group input, 
   .form-group textarea {
     background: rgba(255, 255, 255, 0.05); 
     border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 8px;
+    border-radius: 8px; 
     padding: 22px 12px 8px 12px; 
     color: #fff; 
     font-size: 1rem; 
@@ -179,12 +178,13 @@
   }
   .checkbox-group { display: flex; align-items: center; gap: 10px; font-size: 0.85rem; cursor: pointer; flex: 1; }
   
+  /* 送信ボタンのスタイル連動 */
   #submit-btn {
-    background: var(--accent-color); color: #fff; border: none; padding: 14px 40px;
+    background-color: var(--accent-color); 
+    color: #fff; border: none; padding: 14px 40px;
     font-weight: bold; cursor: pointer; border-radius: 8px;
     transition: 0.3s; white-space: nowrap;
   }
-
   #submit-btn:disabled {
     background-color: #555;
     opacity: 0.6;
@@ -194,6 +194,7 @@
   @media (max-width: 600px) {
     .form-actions { flex-direction: column; align-items: flex-start; }
     #submit-btn { width: 100%; }
+    .contact-box { padding: 20px; }
   }
 
   footer { position: fixed; bottom: 0; left: 0; width: 100%; z-index: 200; }
@@ -242,7 +243,7 @@
         </div>
         <div class="service-item">
           <h3>ロゴマーク作成</h3>
-          <p>事業の哲学を体現する「ロゴマーク」を作成いたします。<br><small style="color:red;">※この作業ではAIを一切使用しません</small></p>
+          <p>事業の哲学を体現する「ロゴマーク」を作成いたします。<br><span style="color:red; background:none;">※この作業ではAIを一切使用しません</span></p>
         </div> 
         <div class="service-item">
           <h3>情報リテラシー支援</h3>
@@ -310,55 +311,68 @@
 </footer>
 
 <script>
-  // 背景の高さを固定する処理（モバイルリサイズ対策）
+  const header = document.getElementById('main-header');
+  const overlay = document.querySelector('.bg-overlay');
+  const bgFixed = document.querySelector('.bg-fixed');
+  const btn = document.getElementById('submit-btn');
+  const check = document.getElementById('policy-check');
+
+  // 背景の明るさとヘッダー制御を一括管理
+  const updateOverlay = () => {
+    const scrollY = window.scrollY;
+    const scrollMax = document.documentElement.scrollHeight - window.innerHeight;
+    let opacity;
+
+    if (scrollY < 100) {
+      // 0px(0.8) から 100px(0.4) へ急変
+      opacity = 0.8 - (scrollY / 100 * 0.4);
+    } else {
+      // 100px(0.4) から 最下部(0.0) へ緩やかに変化
+      const progress = Math.min(1, (scrollY - 100) / (scrollMax - 100));
+      opacity = Math.max(0, 0.4 - (progress * 0.4));
+    }
+
+    overlay.style.backgroundColor = `rgba(0, 0, 0, ${opacity})`;
+    scrollY > 50 ? header.classList.add('header-hidden') : header.classList.remove('header-hidden');
+  };
+
+  // モバイル高さ固定
   const fixMobileHeight = () => {
-    const isMobile = window.matchMedia("(max-width: 1024px)").matches;
-    if (isMobile) {
-      const bg = document.querySelector('.bg-fixed');
-      const overlay = document.querySelector('.bg-overlay');
+    if (window.matchMedia("(max-width: 1024px)").matches) {
       const h = window.innerHeight;
-      bg.style.height = h + 'px';
+      bgFixed.style.height = h + 'px';
       overlay.style.height = h + 'px';
     }
   };
 
-  // 初回読み込みと画面回転時に実行
-  window.addEventListener('load', fixMobileHeight);
+  window.addEventListener('scroll', updateOverlay);
+  window.addEventListener('load', () => {
+    fixMobileHeight();
+    updateOverlay(); 
+  });
   window.addEventListener('orientationchange', () => {
-    // 回転アニメーション待ちで少し遅らせる
     setTimeout(fixMobileHeight, 200);
   });
 
-  const header = document.getElementById('main-header');
-  const overlay = document.querySelector('.bg-overlay');
-
-window.addEventListener('scroll', () => {
-  const scrollY = window.scrollY;
-  // 画面全体のスクロール可能な高さを取得
-  const scrollMax = document.documentElement.scrollHeight - window.innerHeight;
-  let opacity;
-
-  if (scrollY < 100) {
-    // 1. 【初期～スワイプ直後】 100px動く間に 0.8(真っ暗) から 0.4(中間) へ急変
-    opacity = 0.8 - (scrollY / 100 * 0.3);
-  } else {
-    // 2. 【中間～最下部】 残りの距離を使って 0.4 から 0.0(全開) まで緩やかに変化
-    const progress = (scrollY - 100) / (scrollMax - 100);
-    opacity = Math.max(0, 0.3 - (progress * 0.3));
+  if(check) {
+    check.addEventListener('change', () => { btn.disabled = !check.checked; });
   }
 
-  // ヘッダーの消失（既存機能）
-  scrollY > 50 ? header.classList.add('header-hidden') : header.classList.remove('header-hidden');
-  
-  // 計算した不透明度を適用
-  overlay.style.backgroundColor = `rgba(0, 0, 0, ${opacity})`;
-});
-
-  const btn = document.getElementById('submit-btn');
-  const check = document.getElementById('policy-check');
-
-  check.addEventListener('change', () => {
-    btn.disabled = !check.checked;
+  // フォーム送信（GAS連携）
+  const form = document.getElementById('contact-form');
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    btn.disabled = true;
+    btn.innerText = '送信中...';
+    const action = "https://script.google.com/macros/s/AKfycbxrw-4bzUgWmJp_ouLVqP2DBQXLrQcEMKJo7U4f8SsV--R6eNKk9-XLG6JIivcadXAvyw/exec";
+    try {
+      await fetch(action, { method: "POST", body: new FormData(form), mode: "no-cors" });
+      btn.innerText = '送信完了';
+      form.reset();
+    } catch (e) {
+      btn.innerText = '送信失敗';
+      btn.disabled = false;
+    }
   });
 </script>
 
