@@ -74,8 +74,6 @@
   .lead, .declarations, .contact-section { padding: 100px 0; }
 
   /* --- 1. 背景の密着（重なりなし・改行フィット） --- */
-  
-  /* ヒーロー、サービス項目、カードのテキスト：個別に文字幅へ合わせつつ密着 */
   .hero-block h1,
   .service-item h3,
   .service-item p,
@@ -83,9 +81,9 @@
     background-color: rgba(0, 0, 0, 0.45);
     backdrop-filter: blur(4px);
     -webkit-backdrop-filter: blur(4px);
-    display: table; /* 文字の幅にジャストフィットさせる */
+    display: table;
     padding: 2px 8px;
-    margin: 0;      /* 隙間も重なりも作らない */
+    margin: 0;
     line-height: 1.3;
     border-radius: 0;
   }
@@ -103,13 +101,13 @@
 
   .lead-statement h1,
   .lead-statement p {
-    background: none;      /* 子要素の背景は消去 */
+    background: none;
     backdrop-filter: none;
     display: block;
     margin: 0;
   }
   .lead-statement h1 { margin-bottom: 15px; font-size: 2rem; }
-  .lead-statement p { line-height: 1.8; } /* 行間をゆったり確保 */
+  .lead-statement p { line-height: 1.8; }
 
   /* レイアウト微調整 */
   .declarations .lead-statement { margin-bottom: 20px; } 
@@ -118,16 +116,15 @@
   .card-stack { display: flex; flex-direction: column; gap: 30px; }
   .card { border-left: 4px solid var(--accent-color); padding-left: 15px; }
 
-  /* --- 3. お問い合わせセクションとフォームの角丸 --- */
+  /* --- 3. お問い合わせセクション --- */
   .contact-box {
     background-color: rgba(0, 0, 0, 0.45);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    padding: 40px;
-    border: 0px solid rgba(255, 255, 255, 0.1);
+    padding: 10px;
     max-width: 800px;
     margin: 0 auto;
-    border-radius: 0; /* 箱自体はスクエアを維持 */
+    border-radius: 0;
   }
 
   .contact-box h3 {
@@ -140,12 +137,11 @@
   #contact-form { display: flex; flex-direction: column; gap: 20px; }
   .form-group { position: relative; }
   
-  /* フォーム入力欄のラウンド設定 */
   .form-group input, 
   .form-group textarea {
     background: rgba(255, 255, 255, 0.05); 
     border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 8px; /* 指定のラウンド適用 */
+    border-radius: 8px;
     padding: 22px 12px 8px 12px; 
     color: #fff; 
     font-size: 1rem; 
@@ -168,10 +164,24 @@
   }
   .checkbox-group { display: flex; align-items: center; gap: 10px; font-size: 0.85rem; cursor: pointer; flex: 1; }
   
+  /* --- 送信ボタンのスタイル --- */
   #submit-btn {
-    background: var(--accent-color); color: #fff; border: none; padding: 14px 40px;
-    font-weight: bold; cursor: pointer; border-radius: 8px; /* ボタンも連動して角丸に */
-    transition: 0.3s; white-space: nowrap;
+    background-color: var(--accent-color); /* 有効時は水色 */
+    color: #fff; 
+    border: none; 
+    padding: 14px 40px;
+    font-weight: bold; 
+    cursor: pointer; 
+    border-radius: 8px;
+    transition: background-color 0.3s ease, opacity 0.3s ease;
+    white-space: nowrap;
+  }
+
+  /* 無効（disabled）状態のスタイル */
+  #submit-btn:disabled {
+    background-color: #555; /* グレー */
+    opacity: 0.6;
+    cursor: not-allowed;
   }
 
   @media (max-width: 600px) {
@@ -239,9 +249,9 @@
     <div class="container">
       <div class="lead-statement">
         <h1>AIの使用について</h1>
-        <p>1.AIはあくまで「優秀なアシスタント」であり、ディレクションと最終決定権は人間が持ちます。</p>
-        <p>2.生成AIの出力結果をそのまま納品することは一切ありません。必ず人間のクリエイターが再構築を行います。</p>
-        <p>3.御社からお預かりした内部情報を、AIの学習データとして利用することは絶対にありません。</p>
+        <p>1. AIはあくまで「優秀なアシスタント」であり、ディレクションと最終決定権は人間が持ちます。</p>
+        <p>2. 生成AIの出力結果をそのまま納品することは一切ありません。必ず人間のクリエイターが再構築を行います。</p>
+        <p>3. 御社からお預かりした内部情報を、AIの学習データとして利用することは絶対にありません。</p>
       </div>
     </div>
   </section>
@@ -301,11 +311,14 @@
     overlay.style.backgroundColor = `rgba(0, 0, 0, ${opacity})`;
   });
 
+  // チェックボックスとボタンの連動
   const form = document.getElementById('contact-form');
   const btn = document.getElementById('submit-btn');
   const check = document.getElementById('policy-check');
 
-  check.addEventListener('change', () => btn.disabled = !check.checked);
+  check.addEventListener('change', () => {
+    btn.disabled = !check.checked;
+  });
 </script>
 
 </body>
