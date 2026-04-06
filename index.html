@@ -28,7 +28,7 @@
     overscroll-behavior-y: none;
   }
 
-  /* 背景設定 */
+  /* 背景固定設定 */
   .bg-fixed {
     position: fixed;
     top: 0; left: 0; width: 100%; height: 100%;
@@ -44,20 +44,7 @@
     top: 0; left: 0; width: 100%; height: 100%;
     background: rgba(0, 0, 0, 0.6); 
     z-index: -1;
-    /* 変化を滑らかにするための追加 */
     transition: background-color 0.1s linear;
-    will-change: background-color;
-  }
-
-  @media (max-width: 1024px) {
-    .bg-fixed {
-      inset: -10px; 
-      width: calc(100% + 20px);
-      height: calc(100lvh + 20px); 
-      will-change: transform;
-      transform: translate3d(0, 0, 0);
-      -webkit-backface-visibility: hidden;
-    }
   }
 
   /* ヘッダー */
@@ -67,13 +54,7 @@
     z-index: 1000;
     transition: opacity 0.4s ease, transform 0.4s ease;
   }
-
-  .header-hidden {
-    opacity: 0;
-    transform: translateY(-20px);
-    pointer-events: none;
-  }
-
+  .header-hidden { opacity: 0; transform: translateY(-20px); pointer-events: none; }
   .logo-area {
     padding: 30px 0 5px 0;
     display: flex; align-items: center;
@@ -82,85 +63,125 @@
   }
   .logo-area img { height: 4.5rem; width: auto; margin-right: 20px; }
 
-  @media (max-width: 1024px) {
-    .logo-area { padding: 20px 0 5px 0; font-size: 1.2rem; }
-    .logo-area img { height: 3.5rem; }
-  }
-
-  /* コンテンツ */
+  /* メインコンテンツ */
   main {
     position: relative;
     z-index: 10;
     padding-top: var(--initial-gap-pc);
     padding-bottom: 100px;
   }
-
-  @media (max-width: 1024px) {
-    main { padding-top: var(--initial-gap-sp); }
-  }
-
   .container { margin: 0 auto; width: 92%; max-width: 1000px; }
-  @media (max-width: 1024px) { .container { max-width: 750px; } }
-
   h1, h2, h3 { font-family: "Yu Mincho", "Hiragino Mincho ProN", serif; font-weight: 600; }
 
   .hero-block { height: calc(100vh - var(--initial-gap-pc)); display: flex; align-items: center; }
-  @media (max-width: 1024px) { .hero-block { height: calc(100vh - var(--initial-gap-sp)); } }
-  .hero-block h1 { font-size: clamp(1.8rem, 5vw, 2.8rem); line-height: 1.4; }
-
   .lead, .declarations, .contact-section { padding: 100px 0; }
-  .lead-statement { margin-bottom: 80px; }
-  .lead-statement h2 { font-size: 2rem; margin-bottom: 24px; color: #fff; }
 
-  .service-list { display: flex; flex-direction: column; gap: 50px; }
-  .service-item h3 { font-size: 1.3rem; color: var(--accent-color); margin-bottom: 10px; }
-  .service-item p { font-size: 1rem; line-height: 1.7; color: rgba(255, 255, 255, 0.85); max-width: 800px; }
-
-  .declarations h2, .contact-section h2 {
-    display: inline-block; padding: 2px 10px; font-size: clamp(1.4rem, 4vw, 1.8rem);
-    background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.15);
-    border-radius: 4px; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
-    margin-bottom: 35px;
+  /* --- 1. 【重要】文字背景の密着とマーカー化の指定 --- */
+  .hero-block .container,
+  .lead-statement,
+  .service-item,
+  .card {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; /* 常に文字の頭に合わせ、横幅を広げない */
+    background: none !important;
+    backdrop-filter: none !important;
   }
 
-  .card-stack { display: flex; flex-direction: column; gap: 35px; }
-  .card { padding-left: 25px; border-left: 4px solid var(--accent-color); }
-  .card h3 { font-size: 1.3rem; margin-bottom: 8px; color: #fff; }
+  .hero-block h1,
+  .lead-statement h1,
+  .lead-statement p,
+  .service-item h3,
+  .service-item p,
+  .card p {
+    background-color: rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    display: inline; /* これにより改行後の「だらだら」を解消 */
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
+    padding: 2px 8px;
+    margin: 0 !important; /* 上下マージンを完全除去して密着 */
+    line-height: 1.2;     /* 背景同士を連結させるため低めに設定 */
+    border-radius: 2px;
+  }
 
-  /* お問い合わせフォーム */
-  #contact-form { max-width: 650px; display: flex; flex-direction: column; gap: 25px; }
-  .form-group { display: flex; flex-direction: column; gap: 8px; }
-  .form-group label { font-size: 0.9rem; color: var(--accent-color); font-weight: bold; }
+  /* セクション間のレイアウト調整 */
+  .lead-statement { margin-bottom: 60px; }
+  .declarations .lead-statement { margin-bottom: 15px !important; } /* 見出しと本文を近づける */
+  .service-list { display: flex; flex-direction: column; gap: 40px; }
+  .card-stack { display: flex; flex-direction: column; gap: 30px; }
+  .card { border-left: 4px solid var(--accent-color); padding-left: 15px !important; }
+
+  /* フォントサイズ */
+  .hero-block h1 { font-size: clamp(1.8rem, 5vw, 2.8rem); }
+  .lead-statement h1 { font-size: 2rem; }
+  .service-item h3 { font-size: 1.3rem; color: var(--accent-color); }
+
+  /* --- 2. お問い合わせセクションの一体化 --- */
+  .contact-box {
+    background-color: rgba(0, 0, 0, 0.05);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    padding: 10px;
+    border-radius: 0px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .contact-box h3 {
+    display: inline-block;
+    color: var(--accent-color);
+    margin-bottom: 15px; /* フォームとの隙間を短縮 */
+    font-size: clamp(1.4rem, 4vw, 1.8rem);
+  }
+
+  #contact-form { display: flex; flex-direction: column; gap: 20px; }
+
+  /* ラベルを内部に配置 */
+  .form-group { position: relative; }
+  .form-group label {
+    position: absolute; top: 6px; left: 12px; font-size: 0.75rem;
+    color: var(--accent-color); font-weight: bold; z-index: 1; pointer-events: none;
+  }
   .form-group input, .form-group textarea {
     background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 4px; padding: 12px; color: #fff; font-size: 1rem;
+    border-radius: 4px; padding: 22px 12px 8px 12px; color: #fff; font-size: 1rem; width: 100%;
   }
-  .form-group input:focus, .form-group textarea:focus { outline: none; border-color: var(--accent-color); }
 
-  /* 規約同意エリア（追加） */
   .policy-box {
     background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 255, 255, 0.1);
-    padding: 15px; border-radius: 4px; font-size: 0.8rem; height: 110px; overflow-y: scroll;
-    color: rgba(255, 255, 255, 0.7); line-height: 1.5;
+    padding: 15px; border-radius: 4px; font-size: 0.8rem; height: 110px; overflow-y: auto;
+    color: rgba(255, 255, 255, 0.7); line-height: 1.5; margin-bottom: 10px;
   }
-  .checkbox-group { display: flex; align-items: center; gap: 10px; font-size: 0.9rem; cursor: pointer; }
+
+  /* チェックボックスと送信ボタンの並列化 */
+  .form-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+  }
+  .checkbox-group { display: flex; align-items: center; gap: 10px; font-size: 0.85rem; cursor: pointer; flex: 1; }
   .checkbox-group input { width: 18px; height: 18px; cursor: pointer; }
 
   #submit-btn {
-    background: var(--accent-color); color: #fff; border: none; padding: 16px;
-    font-weight: bold; cursor: pointer; border-radius: 4px; transition: 0.3s;
+    background: var(--accent-color); color: #fff; border: none; padding: 14px 40px;
+    font-weight: bold; cursor: pointer; border-radius: 4px; transition: 0.3s; white-space: nowrap;
   }
   #submit-btn:hover:not(:disabled) { opacity: 0.8; }
   #submit-btn:disabled { background: #555; cursor: not-allowed; }
-  #form-status { margin-top: 15px; font-weight: bold; display: none; }
+
+  @media (max-width: 600px) {
+    .form-actions { flex-direction: column; align-items: flex-start; }
+    #submit-btn { width: 100%; }
+  }
 
   /* フッター */
   footer { position: fixed; bottom: 0; left: 0; width: 100%; z-index: 200; }
   .footer-tier-top { background-color: var(--accent-color); height: 8px; }
-  .footer-tier-bottom { 
-    background-color: var(--footer-green); padding: 10px 0; text-align: center;
-    color: #fff; font-size: 0.8rem; font-weight: bold;
-  }
+  .footer-tier-bottom { background-color: var(--footer-green); padding: 10px 0; text-align: center; color: #fff; font-size: 0.8rem; font-weight: bold; }
 </style>
 </head>
 <body>
@@ -187,7 +208,7 @@
   <section class="lead">
     <div class="container">
       <div class="lead-statement">
-        <h2>AIを普通に</h2>
+        <h1>AIを普通に</h1>
         <p>私たちがAIを多用するのは、手抜きをするためではありません。<br>
         AIに向いた作業はAIに任せ、人間のリソースを「設計」と「品質」に100％集中させ、<br>
         現代に妥当なコストカットを実現します。</p>
@@ -202,12 +223,10 @@
           <h3>動画作成</h3>
           <p>SNS広告戦力に欠かせない「PR動画」を作成いたします。</p>
         </div>
-
-      <div class="service-item">
+        <div class="service-item">
           <h3>ロゴマーク作成</h3>
-          <p>事業の哲学を体現する「ロゴマーク」を作成いたします。<br><span style="color:red">※この作業ではAIを一切使用しません</span></p>
+          <p>事業の哲学を体現する「ロゴマーク」を作成いたします。<br><span style="color:red;">※この作業ではAIを一切使用しません</span></p>
         </div> 
-
         <div class="service-item">
           <h3>情報リテラシー支援</h3>
           <p>その時々に最適な判断を。AIツール選定から業務への定着まで、現場の「判断」をサポートする仕組み作りを伴走します。</p>
@@ -218,53 +237,50 @@
 
   <section class="declarations">
     <div class="container">
-      <h2>AIの使用について</h2>
-      <div class="card-stack">
-        <div class="card">
-
-          <h3>1.AIはあくまで「優秀なアシスタント」であり、ディレクションと最終決定権は人間が持ちます。</h3>
-          <h3>2.生成AIの出力結果をそのまま納品することは一切ありません。必ず人間のクリエイターが再構築を行います。</h3>
-          <h3>3. 御社からお預かりした内部情報を、AIの学習データとして利用することは絶対にありません。</h3>
-        </div>
-      
-          
-        </div>
+      <div class="lead-statement">
+        <h1>AIの使用について</h1>
+        <p>1.AIはあくまで「優秀なアシスタント」であり、ディレクションと最終決定権は人間が持ちます。</p>
+        <p>2.生成AIの出力結果をそのまま納品することは一切ありません。必ず人間のクリエイターが再構築を行います。</p>
+        <p>3.御社からお預かりした内部情報を、AIの学習データとして利用することは絶対にありません。</p>
       </div>
     </div>
   </section>
 
   <section class="contact-section">
     <div class="container">
-      <h2 class="glass-label">お問い合わせ</h2>
-      <form id="contact-form">
-        <div class="form-group">
-          <label>お名前</label>
-          <input type="text" name="name" required placeholder="例：伊勢 原太郎">
-        </div>
-        <div class="form-group">
-          <label>メールアドレス</label>
-          <input type="email" name="email" required placeholder="example@gmail.com">
-        </div>
-        <div class="form-group">
-          <label>内容</label>
-          <textarea name="message" rows="5" required placeholder="ご相談内容を入力してください"></textarea>
-        </div>
+      <div class="contact-box">
+        <h3>お問い合わせ</h3>
+        <form id="contact-form">
+          <div class="form-group">
+            <label>お名前 (例：伊勢 原太郎)</label>
+            <input type="text" name="name" required placeholder=" ">
+          </div>
+          <div class="form-group">
+            <label>メールアドレス (example@gmail.com)</label>
+            <input type="email" name="email" required placeholder=" ">
+          </div>
+          <div class="form-group">
+            <label>内容 (ご相談内容を入力してください)</label>
+            <textarea name="message" rows="5" required placeholder=" "></textarea>
+          </div>
 
-        <div class="policy-box">
-          <strong>【免責事項】</strong><br>
-          ・お問い合わせへの回答は、内容により控えさせていただく場合がございます。<br><br>
-          <strong>【プライバシーポリシー】</strong><br>
-          ・お預かりした個人情報は、お問い合わせへの回答および業務連絡のみに使用し、第三者への提供は行いません。
-        </div>
+          <div class="policy-box">
+            <strong>【免責事項】</strong><br>
+            ・お問い合わせへの回答は、内容により控えさせていただく場合がございます。<br><br>
+            <strong>【プライバシーポリシー】</strong><br>
+            ・お預かりした個人情報は、お問い合わせへの回答および業務連絡のみに使用し、第三者への提供は行いません。
+          </div>
 
-        <label class="checkbox-group">
-          <input type="checkbox" id="policy-check" required>
-          免責事項およびプライバシーポリシーに同意する
-        </label>
-
-        <button type="submit" id="submit-btn" disabled>送信する</button>
-      </form>
-      <div id="form-status"></div>
+          <div class="form-actions">
+            <label class="checkbox-group">
+              <input type="checkbox" id="policy-check" required>
+              免責事項およびプライバシーポリシーに同意する
+            </label>
+            <button type="submit" id="submit-btn" disabled>送信する</button>
+          </div>
+        </form>
+        <div id="form-status" style="margin-top:15px; font-weight:bold; display:none;"></div>
+      </div>
     </div>
   </section>
 </main>
@@ -277,78 +293,39 @@
 </footer>
 
 <script>
-  // 1. ヘッダーのスクロール消失処理（既存機能を保持）
   const header = document.getElementById('main-header');
   const overlay = document.querySelector('.bg-overlay');
   window.addEventListener('scroll', () => {
     window.scrollY > 50 ? header.classList.add('header-hidden') : header.classList.remove('header-hidden');
-    
-  // 画面の一番下まで行ったら 0.2 (明るい)、一番上なら 0.6 (暗い) になる計算
-    const scrollHeight = 400;
-    const scrollFraction = scrollHeight > 0 ? scrollY / scrollHeight : 0;
-
-    // 透明度を 0.6 から 0.2 まで徐々に下げる
-    const opacity = 0.6 - (scrollFraction * 0.4);
+    const opacity = Math.max(0.2, 0.6 - (scrollY / 400 * 0.4));
     overlay.style.backgroundColor = `rgba(0, 0, 0, ${opacity})`;
- 
   });
 
-  // 2. 変数の初期化
   const form = document.getElementById('contact-form');
   const status = document.getElementById('form-status');
   const btn = document.getElementById('submit-btn');
   const check = document.getElementById('policy-check');
 
-  // 3. 同意チェックボックスの連動（既存機能を保持）
-  check.addEventListener('change', () => {
-    btn.disabled = !check.checked;
-  });
+  check.addEventListener('change', () => btn.disabled = !check.checked);
 
-  // 4. フォーム送信処理（エラーハンドリング・入力保持・URL修正版）
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
-    
-    // 送信開始時のUI設定
     btn.disabled = true;
     btn.innerText = '送信中...';
-    status.style.display = "none";
-
-    // 【修正済みURL】重複を削除し、正しい形式に整えました
     const action = "https://script.google.com/macros/s/AKfycbxrw-4bzUgWmJp_ouLVqP2DBQXLrQcEMKJo7U4f8SsV--R6eNKk9-XLG6JIivcadXAvyw/exec";
-
     try {
-      // GASへのリクエスト実行
-      await fetch(action, {
-        method: "POST",
-        body: new FormData(form),
-        mode: "no-cors" // Googleのセキュリティ制限を回避
-      });
-
-      // --- 【成功時】の処理 ---
+      await fetch(action, { method: "POST", body: new FormData(form), mode: "no-cors" });
       status.innerText = "お問い合わせを送信しました。";
       status.style.color = "#5ABEE6";
       status.style.display = "block";
-      
-      form.reset();      // 成功時のみ入力をクリア
+      form.reset();
       btn.innerText = '送信完了';
-      btn.disabled = true;
-
     } catch (error) {
-      // --- 【失敗時】の処理 ---
-      status.innerText = "エラーが発生しました。時間を置いて再度お試しください。";
+      status.innerText = "エラーが発生しました。再度お試しください。";
       status.style.color = "#ff6b6b";
       status.style.display = "block";
-
-      // ボタンを元に戻し、入力内容はそのまま保持されます
       btn.disabled = false;
       btn.innerText = '送信する';
-
-      // 5秒後にエラーメッセージだけを自動で消す
-      setTimeout(() => {
-        status.style.display = "none";
-      }, 5000);
-
-      console.error('Submission error:', error);
     }
   });
 </script>
