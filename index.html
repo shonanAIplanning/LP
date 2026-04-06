@@ -38,6 +38,16 @@
     background-repeat: no-repeat;
   }
 
+  /* モバイルでの画像ガタつき防止：JSで高さを制御するため初期値を設定 */
+  @media (max-width: 1024px) {
+    .bg-fixed {
+      height: 100vh; /* JSが読み込まれるまでのフォールバック */
+      will-change: transform;
+      transform: translate3d(0, 0, 0);
+      -webkit-backface-visibility: hidden;
+    }
+  }
+
   .bg-overlay {
     position: fixed;
     top: 0; left: 0; width: 100%; height: 100%;
@@ -73,9 +83,6 @@
   .hero-block { height: calc(100vh - var(--initial-gap-pc)); display: flex; align-items: center; }
   .lead, .declarations, .contact-section { padding: 100px 0; }
 
-  /* --- 修正：ヒーローのh1は背景なし、その他は密着 --- */
-
-  /* ヒーローのh1：背景を完全に除去 */
   .hero-block h1 {
     background: none;
     backdrop-filter: none;
@@ -86,7 +93,6 @@
     font-size: clamp(1.8rem, 5vw, 2.8rem);
   }
 
-  /* サービス項目、カードのテキスト：個別に文字幅へ合わせつつ密着 */
   .service-item h3,
   .service-item p,
   .card p {
@@ -100,7 +106,6 @@
     border-radius: 0;
   }
 
-  /* Lead Statement：一括背景ブロック（行間をとる箇所） */
   .lead-statement {
     background-color: rgba(0, 0, 0, 0.45);
     backdrop-filter: blur(4px);
@@ -121,14 +126,12 @@
   .lead-statement h1 { margin-bottom: 15px; font-size: 2rem; }
   .lead-statement p { line-height: 1.8; }
 
-  /* レイアウト微調整 */
   .declarations .lead-statement { margin-bottom: 20px; } 
   .service-item h3 { color: var(--accent-color); font-size: 1.3rem; }
   .service-list { display: flex; flex-direction: column; gap: 40px; }
   .card-stack { display: flex; flex-direction: column; gap: 30px; }
   .card { border-left: 4px solid var(--accent-color); padding-left: 15px; }
 
-  /* --- 3. お問い合わせセクション --- */
   .contact-box {
     background-color: rgba(0, 0, 0, 0.45);
     backdrop-filter: blur(12px);
@@ -153,7 +156,7 @@
   .form-group textarea {
     background: rgba(255, 255, 255, 0.05); 
     border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 8px; /* 指定のラウンド適用 */
+    border-radius: 8px;
     padding: 22px 12px 8px 12px; 
     color: #fff; 
     font-size: 1rem; 
@@ -307,11 +310,34 @@
 </footer>
 
 <script>
+  // 背景の高さを固定する処理（モバイルリサイズ対策）
+  const fixMobileHeight = () => {
+    const isMobile = window.matchMedia("(max-width: 1024px)").matches;
+    if (isMobile) {
+      const bg = document.querySelector('.bg-fixed');
+      const overlay = document.querySelector('.bg-overlay');
+      const h = window.innerHeight;
+      bg.style.height = h + 'px';
+      overlay.style.height = h + 'px';
+    }
+  };
+
+  // 初回読み込みと画面回転時に実行
+  window.addEventListener('load', fixMobileHeight);
+  window.addEventListener('orientationchange', () => {
+    // 回転アニメーション待ちで少し遅らせる
+    setTimeout(fixMobileHeight, 200);
+  });
+
   const header = document.getElementById('main-header');
   const overlay = document.querySelector('.bg-overlay');
+
   window.addEventListener('scroll', () => {
+    // ヘッダーの消失
     window.scrollY > 50 ? header.classList.add('header-hidden') : header.classList.remove('header-hidden');
-    const opacity = Math.max(0.2, 0.6 - (scrollY / 400 * 0.4));
+    
+    // 背景のオーバーレイ透明度
+    const opacity = Math.max(0.2, 0.6 - (window.scrollY / 400 * 0.4));
     overlay.style.backgroundColor = `rgba(0, 0, 0, ${opacity})`;
   });
 
