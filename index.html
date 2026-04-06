@@ -332,14 +332,27 @@
   const header = document.getElementById('main-header');
   const overlay = document.querySelector('.bg-overlay');
 
-  window.addEventListener('scroll', () => {
-    // ヘッダーの消失
-    window.scrollY > 50 ? header.classList.add('header-hidden') : header.classList.remove('header-hidden');
-    
-    // 背景のオーバーレイ透明度
-    const opacity = Math.max(0.0, 0.5 - (window.scrollY / 400 * 0.1));
-    overlay.style.backgroundColor = `rgba(0, 0, 0, ${opacity})`;
-  });
+window.addEventListener('scroll', () => {
+  const scrollY = window.scrollY;
+  // 画面全体のスクロール可能な高さを取得
+  const scrollMax = document.documentElement.scrollHeight - window.innerHeight;
+  let opacity;
+
+  if (scrollY < 100) {
+    // 1. 【初期～スワイプ直後】 100px動く間に 0.8(真っ暗) から 0.4(中間) へ急変
+    opacity = 0.8 - (scrollY / 100 * 0.3);
+  } else {
+    // 2. 【中間～最下部】 残りの距離を使って 0.4 から 0.0(全開) まで緩やかに変化
+    const progress = (scrollY - 100) / (scrollMax - 100);
+    opacity = Math.max(0, 0.3 - (progress * 0.3));
+  }
+
+  // ヘッダーの消失（既存機能）
+  scrollY > 50 ? header.classList.add('header-hidden') : header.classList.remove('header-hidden');
+  
+  // 計算した不透明度を適用
+  overlay.style.backgroundColor = `rgba(0, 0, 0, ${opacity})`;
+});
 
   const btn = document.getElementById('submit-btn');
   const check = document.getElementById('policy-check');
