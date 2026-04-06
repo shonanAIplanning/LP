@@ -337,7 +337,7 @@
     window.scrollY > 50 ? header.classList.add('header-hidden') : header.classList.remove('header-hidden');
     
     // 背景のオーバーレイ透明度
-    const opacity = Math.max(0.2, 0.6 - (window.scrollY / 400 * 0.4));
+    const opacity = Math.max(0.0, 0.5 - (window.scrollY / 400 * 0.1));
     overlay.style.backgroundColor = `rgba(0, 0, 0, ${opacity})`;
   });
 
