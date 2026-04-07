@@ -405,6 +405,20 @@
 </footer>
 
 <script>
+ // --- スクロール位置のパニック対策（完全版） ---
+  if ('scrollRestoration' in history) {
+    history.scrollRestoration = 'manual'; // ブラウザの記憶を無効化
+  }
+
+  // URLに「#sec-xxx」が残っていると引っ張られるため、ロード時に除去
+  if (window.location.hash) {
+    history.replaceState(null, null, window.location.pathname + window.location.search);
+  }
+
+  // DOMやスナップの計算が完了した直後に、強制的に一番上へ戻す
+  setTimeout(() => {
+    window.scrollTo(0, 0);
+  }, 10);
   const header = document.getElementById('main-header');
   const overlay = document.querySelector('.bg-overlay');
   const bgFixed = document.querySelector('.bg-fixed');
