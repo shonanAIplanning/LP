@@ -21,7 +21,7 @@
   
   html {
     scroll-snap-type: y mandatory;
-    scroll-behavior: smooth;
+    /* Safariバグ回避のため scroll-behavior: smooth; を削除 */
   }
 
   body {
@@ -91,12 +91,10 @@
   h1 { font-family: "Yu Mincho", "Hiragino Mincho ProN", serif; font-weight: 600; }
   h2, h3 { font-family: "Yu Mincho", "Hiragino Mincho ProN", serif; font-weight:bold; margin-bottom: 10px; }
 
-
   /* --- 1ページスクロール（スナップ）用共通クラス --- */
   .snap-section {
     scroll-snap-align: start; 
-    min-height: 100vh;        /* PC用 */
-    min-height: 100dvh;       /* スマホのコンテンツ領域はdvhで柔軟にスナップさせる */
+    min-height: 100vh;        
     display: flex;
     flex-direction: column;
     justify-content: center;  
@@ -112,6 +110,7 @@
     padding-bottom: calc(80px + var(--footer-height));
   }
 
+  /* --- 文字背景の密着とマーカー化の指定 --- */
   .hero-block h1 {
     background: none;
     backdrop-filter: none;
@@ -138,6 +137,7 @@
     border-radius: 0;
   }
 
+  /* --- 分離したステートメントクラス（Concept と Declarations） --- */
   .concept-statement,
   .decl-statement {
     background-color: rgba(0, 0, 0, 0.45);
@@ -173,21 +173,23 @@
   .concept-statement p,
   .decl-statement p { line-height: 1.8; }
 
+  /* --- サービス一覧 --- */
   .service-item h3 { color: var(--accent-color); font-size: 1.3rem; }
   .service-list { 
     display: flex; flex-direction: column; gap: 40px; 
-    margin-top: -10vh; 
+    margin-top: -10vh;
   }
   .card-stack { display: flex; flex-direction: column; gap: 30px; }
   .card { border-left: 4px solid var(--accent-color); padding-left: 15px; }
 
+  /* --- お問い合わせセクション --- */
   .contact-box {
     background-color: rgba(0, 0, 0, 0.45);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     padding: 30px;
     max-width: 800px;
-    margin: -10vh auto 0; 
+    margin: -10vh auto 0;
     border-radius: 0;
   }
 
@@ -240,6 +242,7 @@
     cursor: not-allowed;
   }
 
+  /* --- 右側ドットナビゲーション --- */
   .side-nav {
     position: fixed;
     top: 50%;
@@ -397,24 +400,22 @@
 </footer>
 
 <script>
+  // --- スクロール位置のパニック対策 ---
   if ('scrollRestoration' in history) {
     history.scrollRestoration = 'manual';
   }
-
   if (window.location.hash) {
     history.replaceState(null, null, window.location.pathname + window.location.search);
   }
+  setTimeout(() => { window.scrollTo(0, 0); }, 10);
 
-  setTimeout(() => {
-    window.scrollTo(0, 0);
-  }, 10);
-  
   const header = document.getElementById('main-header');
   const overlay = document.querySelector('.bg-overlay');
   const bgFixed = document.querySelector('.bg-fixed');
   const btn = document.getElementById('submit-btn');
   const check = document.getElementById('policy-check');
 
+  // 背景の明るさのみを管理（ヘッダー制御はObserverへ移管）
   const updateOverlay = () => {
     const scrollY = window.scrollY;
     const scrollMax = document.documentElement.scrollHeight - window.innerHeight;
@@ -426,20 +427,14 @@
       const progress = Math.min(1, (scrollY - 100) / (scrollMax - 100));
       opacity = Math.max(0, 0.4 - (progress * 0.4));
     }
-
     overlay.style.backgroundColor = `rgba(0, 0, 0, ${opacity})`;
-    scrollY > 50 ? header.classList.add('header-hidden') : header.classList.remove('header-hidden');
   };
 
-  // ★復元: 背景の縮尺変化（ガタつき）を防ぐための、高さをピクセル固定する処理
   const fixMobileHeight = () => {
     if (window.matchMedia("(max-width: 1024px)").matches) {
       const h = window.innerHeight;
       bgFixed.style.height = h + 'px';
       overlay.style.height = h + 'px';
-    } else {
-      bgFixed.style.height = '100%';
-      overlay.style.height = '100%';
     }
   };
 
@@ -448,7 +443,6 @@
     fixMobileHeight();
     updateOverlay(); 
   });
-  window.addEventListener('resize', fixMobileHeight); // ウィンドウ幅可変時にも対応
   window.addEventListener('orientationchange', () => {
     setTimeout(fixMobileHeight, 200);
   });
@@ -457,33 +451,54 @@
     check.addEventListener('change', () => { btn.disabled = !check.checked; });
   }
 
-  // ★追加・維持: ナビゲーションバグの修正（JSによるスムーズスクロールの上書き）
+  // --- ナビゲーション監視処理 ＆ ヘッダー表示制御 ---
   const sections = document.querySelectorAll('.snap-section');
   const navDots = document.querySelectorAll('.dot');
   
-  navDots.forEach(dot => {
-    dot.addEventListener('click', (e) => {
-      e.preventDefault(); 
-      const targetId = dot.getAttribute('href');
-      const targetSection = document.querySelector(targetId);
-      if (targetSection) {
-        targetSection.scrollIntoView({ behavior: 'smooth' }); 
-      }
-    });
-  });
-
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
         const id = entry.target.getAttribute('id');
+        
+        // 1. ナビのドット更新
         navDots.forEach(dot => {
           dot.classList.toggle('active', dot.getAttribute('href') === `#${id}`);
         });
+
+        // 2. ヘッダー（ロゴ）の表示制御
+        // トップ、Concept、Declarations の時だけヘッダーを表示する
+        if (id === 'sec-hero' || id === 'sec-concept' || id === 'sec-decl') {
+          header.classList.remove('header-hidden');
+        } else {
+          header.classList.add('header-hidden');
+        }
       }
     });
   }, { threshold: 0.5 });
 
   sections.forEach(section => observer.observe(section));
+
+  // --- Safari用 スムーススクロール制御（バグ回避） ---
+  navDots.forEach(dot => {
+    dot.addEventListener('click', (e) => {
+      e.preventDefault(); // デフォルトのアンカー移動をキャンセル
+      const targetId = dot.getAttribute('href');
+      const targetSection = document.querySelector(targetId);
+      
+      if (targetSection) {
+        // 移動中のみスナップを無効化し、Safariの競合を防ぐ
+        document.documentElement.style.scrollSnapType = 'none';
+        
+        // JSでスムーススクロール実行
+        targetSection.scrollIntoView({ behavior: 'smooth' });
+        
+        // スクロール完了想定時間後にスナップを復活させる
+        setTimeout(() => {
+          document.documentElement.style.scrollSnapType = 'y mandatory';
+        }, 800);
+      }
+    });
+  });
 
   // フォーム送信処理
   const form = document.getElementById('contact-form');
