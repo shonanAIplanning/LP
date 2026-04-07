@@ -19,6 +19,11 @@
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
   
+  html {
+    scroll-snap-type: y mandatory;
+    scroll-behavior: smooth;
+  }
+
   body {
     font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
     color: var(--text-main);
@@ -28,7 +33,6 @@
     overscroll-behavior-y: none;
   }
 
-  /* 背景固定設定 */
   .bg-fixed {
     position: fixed;
     top: 0; left: 0; width: 100%; height: 100%;
@@ -39,7 +43,6 @@
     background-repeat: no-repeat;
   }
 
-  /* 初期状態でしっかり暗く設定 */
   .bg-overlay {
     position: fixed;
     top: 0; left: 0; width: 100%; height: 100%;
@@ -56,46 +59,59 @@
   }
   .header-hidden { opacity: 0; transform: translateY(-20px); pointer-events: none; }
   
-  .logo-area {
+ .logo-area {
     padding: 0px 0 5px 0;
-    display: flex; align-items: center;
-    font-size: 1rem; font-weight: bold;
+    display: flex; 
+    flex-direction: column;
+    align-items: flex-start;
+    font-size: 0.8rem; font-weight: bold;
     color: #fff; text-decoration: none; letter-spacing: 0;
-    transform: translateX(-20px); /* ★ここを追加（マイナスで左、プラスで右へ移動） */
+    transform: translate(0px, -80px);
   }
 
-  /* 画像単体のコントロール用 */
   .logo-image { 
-    height: 14rem; 
+    height: 16.5rem;
     width: auto; 
     margin-right: 0px; 
-    /* 下記数値を変更して画像を上下に微調整（例: -5px, 5px） */
-    transform: translateY(-7px); 
+    margin-bottom: 5px;
+    transform: translateX(-30px);
   }
 
-  /* テキスト単体のコントロール用 */
   .logo-text {
     display: inline-block; 
     line-height: 1; 
-    /* 下記数値を変更してテキストを上下に微調整（例: -5px, 5px） */
-    transform: translateY(18px); 
+    transform: translateY(-90px); 
   }
 
   main {
     position: relative;
     z-index: 10;
-    padding-top: var(--initial-gap-pc);
-    padding-bottom: 100px;
   }
   .container { margin: 0 auto; width: 92%; max-width: 1000px; }
-  h1, h2, h3 { font-family: "Yu Mincho", "Hiragino Mincho ProN", serif; font-weight: 600; }
+  h1 { font-family: "Yu Mincho", "Hiragino Mincho ProN", serif; font-weight: 600; }
+  h2, h3 { font-family: "Yu Mincho", "Hiragino Mincho ProN", serif; font-weight:bold; margin-bottom: 10px; }
 
-  .hero-block { height: calc(100vh - var(--initial-gap-pc)); display: flex; align-items: center; }
-  .lead, .declarations, .contact-section { padding: 100px 0; }
+
+  /* --- 1ページスクロール（スナップ）用共通クラス --- */
+  .snap-section {
+    scroll-snap-align: start; 
+    min-height: 100vh;        
+    display: flex;
+    flex-direction: column;
+    justify-content: center;  
+    padding: 80px 0;          
+  }
+
+  .hero-block { 
+    padding-top: var(--initial-gap-pc); 
+    padding-bottom: 0;
+  }
+  
+  .contact-section {
+    padding-bottom: calc(80px + var(--footer-height));
+  }
 
   /* --- 文字背景の密着とマーカー化の指定 --- */
-
-  /* ヒーローのh1：背景を完全に除去 */
   .hero-block h1 {
     background: none;
     backdrop-filter: none;
@@ -103,9 +119,12 @@
     margin: 0;
     line-height: 1.4;
     font-size: clamp(1.8rem, 5vw, 2.8rem);
+    margin-top: 25vh; /* ★ 40vhから25vhに変更 */
+    margin-bottom: 15vh; 
+    width: fit-content;
+    max-width: 100%;
   }
 
-  /* サービス項目、カードのテキスト：個別に文字幅へ合わせつつ密着 */
   .service-item h3,
   .service-item p,
   .card p {
@@ -119,31 +138,48 @@
     border-radius: 0;
   }
 
-  /* Lead Statement：一括背景ブロック（行間をとる箇所） */
-  .lead-statement {
+  /* --- 分離したステートメントクラス（Concept と Declarations） --- */
+  .concept-statement,
+  .decl-statement {
     background-color: rgba(0, 0, 0, 0.45);
     backdrop-filter: blur(4px);
     -webkit-backdrop-filter: blur(4px);
     padding: 24px;
-    margin-bottom: 60px;
     width: fit-content;
     max-width: 100%;
   }
 
-  .lead-statement h1,
-  .lead-statement p {
+  .concept-statement {
+    margin-top: -15vh; /* ★ 0vhから-15vhに変更 */
+    margin-bottom: 15vh; 
+  }
+
+  .decl-statement {
+    margin-top: -20vh; /* ★ -10vhから-20vhに変更 */
+    margin-bottom: 5%; 
+  }
+
+  .concept-statement h1,
+  .concept-statement p,
+  .decl-statement h1,
+  .decl-statement p {
     background: none;
     backdrop-filter: none;
     display: block;
     margin: 0;
   }
-  .lead-statement h1 { margin-bottom: 15px; font-size: 2rem; }
-  .lead-statement p { line-height: 1.8; }
+  .concept-statement h1,
+  .decl-statement h1 { margin-bottom: 15px; font-size: 2rem; }
+  
+  .concept-statement p,
+  .decl-statement p { line-height: 1.8; }
 
-  /* レイアウト微調整 */
-  .declarations .lead-statement { margin-bottom: 20px; } 
+  /* --- サービス一覧 --- */
   .service-item h3 { color: var(--accent-color); font-size: 1.3rem; }
-  .service-list { display: flex; flex-direction: column; gap: 40px; }
+  .service-list { 
+    display: flex; flex-direction: column; gap: 40px; 
+    margin-top: -10vh; /* ★ 新規追加：中央から上へ引き上げ */
+  }
   .card-stack { display: flex; flex-direction: column; gap: 30px; }
   .card { border-left: 4px solid var(--accent-color); padding-left: 15px; }
 
@@ -154,7 +190,7 @@
     -webkit-backdrop-filter: blur(12px);
     padding: 30px;
     max-width: 800px;
-    margin: 0 auto;
+    margin: -10vh auto 0; /* ★ 0 autoから-10vhに変更 */
     border-radius: 0;
   }
 
@@ -168,7 +204,6 @@
   #contact-form { display: flex; flex-direction: column; gap: 20px; }
   .form-group { position: relative; }
   
-  /* フォーム入力欄のラウンド設定（8px） */
   .form-group input, 
   .form-group textarea {
     background: rgba(255, 255, 255, 0.05); 
@@ -196,7 +231,6 @@
   }
   .checkbox-group { display: flex; align-items: center; gap: 10px; font-size: 0.85rem; cursor: pointer; flex: 1; }
   
-  /* 送信ボタンのスタイル連動 */
   #submit-btn {
     background-color: var(--accent-color); 
     color: #fff; border: none; padding: 14px 40px;
@@ -209,15 +243,45 @@
     cursor: not-allowed;
   }
 
+  /* --- 右側ドットナビゲーション --- */
+  .side-nav {
+    position: fixed;
+    top: 50%;
+    right: 20px;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    z-index: 1000;
+  }
+  .dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.3);
+    transition: background-color 0.3s, transform 0.3s;
+    text-decoration: none;
+  }
+  .dot.active {
+    background-color: var(--footer-green);
+    transform: scale(1.3);
+  }
+
   @media (max-width: 600px) {
+    .concept-statement {
+      margin-top: 35vh; /* ★ 50vhから35vhに変更 */
+    }
+    .decl-statement {
+      margin-top: 25vh; /* ★ 40vhから25vhに変更 */
+    }
     .form-actions { flex-direction: column; align-items: flex-start; }
     #submit-btn { width: 100%; }
     .contact-box { padding: 20px; }
   }
 
-  footer { position: fixed; bottom: 0; left: 0; width: 100%; z-index: 200; }
+  footer { position: fixed; bottom: 0; left: 0; width: 100%; z-index: 200; pointer-events: none; }
   .footer-tier-top { background-color: var(--accent-color); height: 8px; }
-  .footer-tier-bottom { background-color: var(--footer-green); padding: 10px 0; text-align: center; color: #fff; font-size: 0.8rem; font-weight: bold; }
+  .footer-tier-bottom { background-color: var(--footer-green); padding: 10px 0; text-align: center; color: #fff; font-size: 0.8rem; font-weight: bold; pointer-events: auto; }
 </style>
 </head>
 <body>
@@ -234,22 +298,34 @@
   </div>
 </header>
 
+<nav class="side-nav">
+  <a href="#sec-hero" class="dot active" aria-label="Top"></a>
+  <a href="#sec-concept" class="dot" aria-label="Concept"></a>
+  <a href="#sec-services" class="dot" aria-label="Services"></a>
+  <a href="#sec-decl" class="dot" aria-label="Declarations"></a>
+  <a href="#sec-contact" class="dot" aria-label="Contact"></a>
+</nav>
+
 <main>
-  <section class="hero-block">
+  <section id="sec-hero" class="hero-block snap-section">
     <div class="container">
       <h1>働く現場に、<br>最適をデザイン。</h1>
     </div>
   </section>
 
-  <section class="lead">
+  <section id="sec-concept" class="lead snap-section">
     <div class="container">
-      <div class="lead-statement">
-        <h1>AIを普通に</h1>
+      <div class="concept-statement">
+        <h2>AIを普通に</h2>
         <p>私たちがAIを多用するのは、手抜きをするためではありません。<br>
         AIに向いた作業はAIに任せ、人間のリソースを「設計」と「品質」に100％集中させ、<br>
         現代に妥当なコストカットを実現します。</p>
       </div>
+    </div>
+  </section>
 
+  <section id="sec-services" class="services snap-section">
+    <div class="container">
       <div class="service-list">
         <div class="service-item">
           <h3>Web制作</h3>
@@ -271,10 +347,10 @@
     </div>
   </section>
 
-  <section class="declarations">
+  <section id="sec-decl" class="declarations snap-section">
     <div class="container">
-      <div class="lead-statement">
-        <h1>AIの使用について</h1>
+      <div class="decl-statement">
+        <h2>AIの使用について</h2>
         <p>1. AIはあくまで「優秀なアシスタント」であり、ディレクションと最終決定権は人間が持ちます。</p>
         <p>2. 生成AIの出力結果をそのまま納品することは一切ありません。必ず人間のクリエイターが再構築を行います。</p>
         <p>3. 御社からお預かりした内部情報を、AIの学習データとして利用することは絶対にありません。</p>
@@ -282,7 +358,7 @@
     </div>
   </section>
 
-  <section class="contact-section">
+  <section id="sec-contact" class="contact-section snap-section">
     <div class="container">
       <div class="contact-box">
         <h3>お問い合わせ</h3>
@@ -335,17 +411,14 @@
   const btn = document.getElementById('submit-btn');
   const check = document.getElementById('policy-check');
 
-  // 背景の明るさとヘッダー制御を一括管理
   const updateOverlay = () => {
     const scrollY = window.scrollY;
     const scrollMax = document.documentElement.scrollHeight - window.innerHeight;
     let opacity;
 
     if (scrollY < 100) {
-      // 0px(0.8) から 100px(0.4) へ急変
       opacity = 0.8 - (scrollY / 100 * 0.4);
     } else {
-      // 100px(0.4) から 最下部(0.0) へ緩やかに変化
       const progress = Math.min(1, (scrollY - 100) / (scrollMax - 100));
       opacity = Math.max(0, 0.4 - (progress * 0.4));
     }
@@ -354,7 +427,6 @@
     scrollY > 50 ? header.classList.add('header-hidden') : header.classList.remove('header-hidden');
   };
 
-  // モバイル高さ固定
   const fixMobileHeight = () => {
     if (window.matchMedia("(max-width: 1024px)").matches) {
       const h = window.innerHeight;
@@ -376,7 +448,23 @@
     check.addEventListener('change', () => { btn.disabled = !check.checked; });
   }
 
-  // フォーム送信（GAS連携）
+  // ナビゲーション監視処理
+  const sections = document.querySelectorAll('.snap-section');
+  const navDots = document.querySelectorAll('.dot');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const id = entry.target.getAttribute('id');
+        navDots.forEach(dot => {
+          dot.classList.toggle('active', dot.getAttribute('href') === `#${id}`);
+        });
+      }
+    });
+  }, { threshold: 0.5 });
+
+  sections.forEach(section => observer.observe(section));
+
+  // フォーム送信処理
   const form = document.getElementById('contact-form');
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
