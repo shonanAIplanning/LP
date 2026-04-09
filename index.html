@@ -22,7 +22,6 @@
   html {
     scroll-snap-type: y mandatory;
     overscroll-behavior-y: none;
-    /* Safariバグ回避のため scroll-behavior: smooth; を削除 */
   }
 
   body {
@@ -34,9 +33,10 @@
     overscroll-behavior-y: none;
   }
 
+  /* --- 背景画像の固定（隙間解消版） --- */
   .bg-fixed {
     position: fixed;
-    top: 0; left: 0; width: 100%; height: 100%;
+    top: 0; left: 0; right: 0; bottom: 0;
     z-index: -2;
     background-image: var(--main-bg-url); 
     background-size: cover;
@@ -46,7 +46,7 @@
 
   .bg-overlay {
     position: fixed;
-    top: 0; left: 0; width: 100%; height: 100%;
+    top: 0; left: 0; right: 0; bottom: 0;
     background-color: rgba(0, 0, 0, 0.8); 
     z-index: -1;
     transition: background-color 0.1s linear;
@@ -60,7 +60,7 @@
   }
   .header-hidden { opacity: 0; transform: translateY(-20px); pointer-events: none; }
   
- .logo-area {
+  .logo-area {
     padding: 0px 0 5px 0;
     display: flex; 
     flex-direction: column;
@@ -82,6 +82,56 @@
     display: inline-block; 
     line-height: 1; 
     transform: translateY(-90px); 
+  }
+
+  /* --- LINEリンクのスタイル（正円・ヒーロー右下配置） --- */
+.hero-line-link {
+  position: absolute;
+  /* 変更：topとleftを削除し、bottomとrightで右下を指定 */
+  bottom: 5vh;  /* h1下の余白空間に配置（環境に合わせて数値を微調整してください） */
+  right: 10px;  /* コンテナの右端に合わせる */
+  z-index: 10;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 1.3;
+    font-size: 0.9rem;
+    font-weight: bold;
+    text-decoration: none;
+    background-color: rgba(255, 255, 255, 0.85);
+    color: #06C755;
+    border: 0px solid rgba(6, 199, 85, 0.4);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    
+    /* 状態A：非表示 */
+    opacity: 0;
+  visibility: hidden;
+  /* 変更：下に10px下げつつ、右斜め上（-10度）に傾けておく */
+  transform: translateY(10px) rotate(-10deg); 
+  
+  transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.25, 1, 0.5, 1), visibility 0.8s, background-color 0.3s ease, border-color 0.3s ease;
+}
+
+  /* 2. 【状態B】画面に入った時の状態 */
+.hero-line-link.is-active {
+  opacity: 1;
+  visibility: visible;
+  /* 変更：定位置に戻しても、傾き（-10度）は維持する */
+  transform: translateY(0) rotate(-20deg);
+  transition-delay: 0.5s;
+}
+
+  .hero-line-link.is-active:hover {
+    background-color: rgba(255, 255, 255, 1);
+    border-color: rgba(6, 199, 85, 0.8);
+    transform: scale(1.05);
+    transition: all 0.3s ease; 
   }
 
   main {
@@ -125,10 +175,21 @@
     max-width: 100%;
   }
 
+  
+   .service-list{background-color: rgba(107, 108, 107, 0.7);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    display: table; 
+    padding: 6px 8px;
+    margin: 0;
+    line-height: 1.3;
+    border-radius: 8px;}
+
+
   .service-item h3,
   .service-item p,
   .card p {
-    background-color: rgba(0, 0, 0, 0.45);
+     background-color: rgba(28, 28, 28, 0.678);
     backdrop-filter: blur(4px);
     -webkit-backdrop-filter: blur(4px);
     display: table; 
@@ -286,11 +347,12 @@
 <div class="bg-overlay"></div>
 
 <header id="main-header">
-  <div class="container">
+  <div class="container" style="position: relative;">
     <a href="#" class="logo-area">
       <img src="images/saiplogo.png" alt="湘南AI企画ロゴ" class="logo-image">
       <span class="logo-text">Shonan AI Planning</span>
     </a>
+    
   </div>
 </header>
 
@@ -304,8 +366,12 @@
 
 <main>
   <section id="sec-hero" class="hero-block snap-section">
-    <div class="container">
+    <div class="container" style="position: relative;">
       <h1>働く現場に、<br>最適をデザイン。</h1>
+      
+      <a href="https://lin.ee/W130DSz" class="hero-line-link" target="_blank" rel="noopener">
+        LINEで<br>お得な<br>地球情報を<br>配信中！
+      </a>
     </div>
   </section>
 
@@ -328,16 +394,17 @@
           <p>AIを活用したワークフローにより、スピーディに安価にご提供いたします。</p>
         </div>
         <div class="service-item">
-          <h3>動画作成</h3>
-          <p>SNS広告戦力に欠かせない「PR動画」を作成いたします。</p>
-        </div>
-        <div class="service-item">
           <h3>ロゴマーク作成</h3>
           <p>事業の哲学を体現する「ロゴマーク」を作成いたします。<br><span style="color:red; background:none;">※この作業ではAIを一切使用しません</span></p>
         </div> 
         <div class="service-item">
-          <h3>情報リテラシー支援</h3>
-          <p>その時々に最適な判断を。AIツール選定から業務への定着まで、現場の「判断」をサポートする仕組み作りを伴走します。</p>
+          <h3>動画作成</h3>
+          <p>SNS広告戦力に欠かせない「PR動画」を作成いたします。</p>
+        </div>
+        
+        <div class="service-item">
+          <h3>それAIかも？！</h3>
+          <p>その時々に最適な判断を。AIツール選定から業務への定着まで、仕組み作りを伴走します。ぜひ一度、ご相談ください。</p>
         </div>
       </div>
     </div>
@@ -412,11 +479,10 @@
 
   const header = document.getElementById('main-header');
   const overlay = document.querySelector('.bg-overlay');
-  const bgFixed = document.querySelector('.bg-fixed');
   const btn = document.getElementById('submit-btn');
   const check = document.getElementById('policy-check');
 
-  // 背景の明るさのみを管理（ヘッダー制御はObserverへ移管）
+  // 背景の明るさ管理
   const updateOverlay = () => {
     const scrollY = window.scrollY;
     const scrollMax = document.documentElement.scrollHeight - window.innerHeight;
@@ -431,47 +497,43 @@
     overlay.style.backgroundColor = `rgba(0, 0, 0, ${opacity})`;
   };
 
-  const fixMobileHeight = () => {
-    if (window.matchMedia("(max-width: 1024px)").matches) {
-      const h = window.innerHeight;
-      bgFixed.style.height = h + 'px';
-      overlay.style.height = h + 'px';
-    }
-  };
-
   window.addEventListener('scroll', updateOverlay);
-  window.addEventListener('load', () => {
-    fixMobileHeight();
-    updateOverlay(); 
-  });
-  window.addEventListener('orientationchange', () => {
-    setTimeout(fixMobileHeight, 200);
-  });
+  window.addEventListener('load', () => { updateOverlay(); });
 
   if(check) {
     check.addEventListener('change', () => { btn.disabled = !check.checked; });
   }
 
-  // --- ナビゲーション監視処理 ＆ ヘッダー表示制御 ---
+  // --- ナビゲーション監視処理 ＆ ヘッダー・LINEリンク表示制御 ---
   const sections = document.querySelectorAll('.snap-section');
   const navDots = document.querySelectorAll('.dot');
-  
+  const lineLink = document.querySelector('.hero-line-link');
+
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
+      const id = entry.target.getAttribute('id');
+      
       if (entry.isIntersecting) {
-        const id = entry.target.getAttribute('id');
-        
         // 1. ナビのドット更新
         navDots.forEach(dot => {
           dot.classList.toggle('active', dot.getAttribute('href') === `#${id}`);
         });
 
         // 2. ヘッダー（ロゴ）の表示制御
-        // トップ、Concept、Declarations の時だけヘッダーを表示する
         if (id === 'sec-hero' || id === 'sec-concept' || id === 'sec-decl') {
           header.classList.remove('header-hidden');
         } else {
           header.classList.add('header-hidden');
+        }
+
+        // 3. LINEリンクの表示（TransitionスイッチON）
+        if (id === 'sec-hero' && lineLink) {
+          lineLink.classList.add('is-active');
+        }
+      } else {
+        // セクションから外れたら戻す（TransitionスイッチOFF）
+        if (id === 'sec-hero' && lineLink) {
+          lineLink.classList.remove('is-active');
         }
       }
     });
@@ -479,21 +541,17 @@
 
   sections.forEach(section => observer.observe(section));
 
-  // --- Safari用 スムーススクロール制御（バグ回避） ---
+  // --- Safari用 スムーススクロール制御 ---
   navDots.forEach(dot => {
     dot.addEventListener('click', (e) => {
-      e.preventDefault(); // デフォルトのアンカー移動をキャンセル
+      e.preventDefault();
       const targetId = dot.getAttribute('href');
       const targetSection = document.querySelector(targetId);
       
       if (targetSection) {
-        // 移動中のみスナップを無効化し、Safariの競合を防ぐ
         document.documentElement.style.scrollSnapType = 'none';
-        
-        // JSでスムーススクロール実行
         targetSection.scrollIntoView({ behavior: 'smooth' });
         
-        // スクロール完了想定時間後にスナップを復活させる
         setTimeout(() => {
           document.documentElement.style.scrollSnapType = 'y mandatory';
         }, 800);
@@ -501,7 +559,7 @@
     });
   });
 
-  // フォーム送信処理
+  // --- フォーム送信処理 ---
   const form = document.getElementById('contact-form');
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
