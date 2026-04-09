@@ -84,13 +84,10 @@
     transform: translateY(-90px); 
   }
 
-  /* --- LINEリンクのスタイル（正円・ヒーロー右下配置） --- */
-.hero-line-link {
-  position: absolute;
-  /* 変更：topとleftを削除し、bottomとrightで右下を指定 */
-  bottom: 5vh;  /* h1下の余白空間に配置（環境に合わせて数値を微調整してください） */
-  right: 10px;  /* コンテナの右端に合わせる */
-  z-index: 10;
+  /* --- LINEリンクのスタイル（移動アニメーション対応） --- */
+  .hero-line-link {
+    position: absolute;
+    z-index: 100;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -111,28 +108,42 @@
     
     /* 状態A：非表示 */
     opacity: 0;
-  visibility: hidden;
-  /* 変更：下に10px下げつつ、右斜め上（-10度）に傾けておく */
-  transform: translateY(10px) rotate(-10deg); 
-  
-  transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.25, 1, 0.5, 1), visibility 0.8s, background-color 0.3s ease, border-color 0.3s ease;
-}
+    visibility: hidden;
+    transition: all 0.8s cubic-bezier(0.65, 0, 0.35, 1);
+  }
 
-  /* 2. 【状態B】画面に入った時の状態 */
-.hero-line-link.is-active {
-  opacity: 1;
-  visibility: visible;
-  /* 変更：定位置に戻しても、傾き（-10度）は維持する */
-  transform: translateY(0) rotate(-20deg);
-  transition-delay: 0.5s;
-}
+ /* 状態B：表示（JSでクラス付与時） */
+  .hero-line-link.is-active {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0) rotate(-10deg);
+  }
 
-  .hero-line-link.is-active:hover {
+  /* --- ホバーアクションの確実な適用 --- */
+  /* 詳細度を上げるために .hero-line-link.is-active:hover と記述し、各posクラスもカバーする */
+  a.hero-line-link.is-active:hover {
     background-color: rgba(255, 255, 255, 1);
     border-color: rgba(6, 199, 85, 0.8);
-    transform: scale(1.05);
+    /* translateYは現在位置を維持するため、明示的に0を指定 */
+    transform: translateY(0) scale(1.05) rotate(0deg) ;
     transition: all 0.3s ease; 
   }
+
+  /* --- 配置位置の個別設定 --- */
+  /* 1. Heroセクションでの位置（右下） */
+  .pos-hero {
+    bottom: 5vh; 
+    right: 10px; /* ここが右側の基準になります */
+    transform: translateY(50px) rotate(-10deg); /* 下から上がってくる */
+  }
+
+  /* 2. Conceptセクションでの位置（右側維持 ＆ ロゴ下の高さ） */
+  .pos-concept {
+    top: -5vh; /* コンテナ上部から上に飛び出させ、ロゴ下付近に配置（環境に合わせて数値を微調整してください） */
+    right: 10px; /* Heroと1pxの狂いもなく同じ右側位置に揃う */
+    transform: translateY(-50px) rotate(-10deg); /* 上から下がってくる */
+  }
+
 
   main {
     position: relative;
@@ -175,21 +186,21 @@
     max-width: 100%;
   }
 
-  
-   .service-list{background-color: rgba(107, 108, 107, 0.7);
+  .service-list {
+    background-color: rgba(107, 108, 107, 0.7);
     backdrop-filter: blur(4px);
     -webkit-backdrop-filter: blur(4px);
     display: table; 
     padding: 6px 8px;
     margin: 0;
     line-height: 1.3;
-    border-radius: 8px;}
-
+    border-radius: 8px;
+  }
 
   .service-item h3,
   .service-item p,
   .card p {
-     background-color: rgba(28, 28, 28, 0.678);
+    background-color: rgba(28, 28, 28, 0.678);
     backdrop-filter: blur(4px);
     -webkit-backdrop-filter: blur(4px);
     display: table; 
@@ -208,6 +219,7 @@
     padding: 24px;
     width: fit-content;
     max-width: 100%;
+    /* ここにあった position: relative; は削除し、配置のバグを防ぎます */
   }
 
   .concept-statement {
@@ -352,7 +364,6 @@
       <img src="images/saiplogo.png" alt="湘南AI企画ロゴ" class="logo-image">
       <span class="logo-text">Shonan AI Planning</span>
     </a>
-    
   </div>
 </header>
 
@@ -369,20 +380,24 @@
     <div class="container" style="position: relative;">
       <h1>働く現場に、<br>最適をデザイン。</h1>
       
-      <a href="https://lin.ee/W130DSz" class="hero-line-link" target="_blank" rel="noopener">
+      <a href="https://lin.ee/W130DSz" class="hero-line-link pos-hero" target="_blank" rel="noopener">
         LINEで<br>お得な<br>地球情報を<br>配信中！
       </a>
     </div>
   </section>
 
   <section id="sec-concept" class="lead snap-section">
-    <div class="container">
+    <div class="container" style="position: relative;">
       <div class="concept-statement">
         <h2>AIを普通に</h2>
         <p>私たちがAIを多用するのは、手抜きをするためではありません。<br>
         AIに向いた作業はAIに任せ、人間のリソースを「設計」と「品質」に100％集中させ、<br>
         現代に妥当なコストカットを実現します。</p>
       </div>
+      
+      <a href="https://lin.ee/W130DSz" class="hero-line-link pos-concept" target="_blank" rel="noopener">
+        LINEで<br>お得な<br>地球情報を<br>配信中！
+      </a>
     </div>
   </section>
 
@@ -507,11 +522,13 @@
   // --- ナビゲーション監視処理 ＆ ヘッダー・LINEリンク表示制御 ---
   const sections = document.querySelectorAll('.snap-section');
   const navDots = document.querySelectorAll('.dot');
-  const lineLink = document.querySelector('.hero-line-link');
 
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       const id = entry.target.getAttribute('id');
+      
+      // そのセクション内に存在するLINEリンクを取得（局所化）
+      const sectionLineLink = entry.target.querySelector('.hero-line-link');
       
       if (entry.isIntersecting) {
         // 1. ナビのドット更新
@@ -526,14 +543,14 @@
           header.classList.add('header-hidden');
         }
 
-        // 3. LINEリンクの表示（TransitionスイッチON）
-        if (id === 'sec-hero' && lineLink) {
-          lineLink.classList.add('is-active');
+        // 3. このセクションのLINEリンクを表示（あれば）
+        if (sectionLineLink) {
+          sectionLineLink.classList.add('is-active');
         }
       } else {
-        // セクションから外れたら戻す（TransitionスイッチOFF）
-        if (id === 'sec-hero' && lineLink) {
-          lineLink.classList.remove('is-active');
+        // セクションから外れたら、このセクションのLINEリンクを非表示
+        if (sectionLineLink) {
+          sectionLineLink.classList.remove('is-active');
         }
       }
     });
