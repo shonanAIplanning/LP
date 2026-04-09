@@ -51,22 +51,17 @@
     transition: background-color 0.1s linear;
   }
 
-  /* ====================================================
-     ヘッダー修正：透明時にクリック判定を完全に消滅させる
-     ==================================================== */
+  /* ヘッダー修正：透明時にクリック判定を完全に消滅させる */
   header {
     position: fixed;
     top: 0; left: 0; width: 100%;
     z-index: 1000;
-    /* visibilityの遷移も追加して滑らかに消す */
     transition: opacity 0.4s ease, transform 0.4s ease, visibility 0.4s;
     pointer-events: none; 
   }
-
   .header-hidden { 
     opacity: 0; 
     transform: translateY(-20px); 
-    /* ★超重要：ここが原因でした。透明になったら「物理的に触れなくする」設定を追加 */
     visibility: hidden; 
   }
   
@@ -78,11 +73,10 @@
     font-size: 0.8rem; font-weight: bold;
     color: #fff; text-decoration: none; letter-spacing: 0;
     transform: translate(0px, -80px);
-    pointer-events: auto; /* ロゴはクリック可能 */
+    pointer-events: auto; 
   }
 
   .logo-image { 
-    /* この巨大な高さを持つ画像が下敷きになっていました */
     height: 16.5rem;
     width: auto; 
     margin-right: 0px; 
@@ -96,14 +90,11 @@
     transform: translateY(-90px); 
   }
 
-  /* ====================================================
-     LINEリンク：遅延フェードイン
-     ==================================================== */
+  /* LINEリンク：遅延フェードイン */
   #global-line-btn {
     position: fixed;
     right: max(4vw, calc(50vw - 500px + 10px));
     z-index: 2000; 
-    
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -121,12 +112,10 @@
     border: 0px solid rgba(6, 199, 85, 0.4);
     backdrop-filter: blur(4px);
     -webkit-backdrop-filter: blur(4px);
-    
     opacity: 0;
     visibility: hidden;
     top: 85vh; 
     transform: rotate(-20deg);
-    
     transition: top 0.8s cubic-bezier(0.65, 0, 0.35, 1), transform 0.3s ease, opacity 0.4s ease, visibility 0.4s;
     pointer-events: auto;
   }
@@ -147,12 +136,16 @@
     transition: top 0.8s cubic-bezier(0.65, 0, 0.35, 1), transform 0.3s ease, background-color 0.3s ease !important;
   }
 
+  /* フォーム入力中のキーボード対策（LINEボタンを隠す） */
+  body.is-form-focused #global-line-btn {
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+  }
+
 
   /* --- 以下、既存のレイアウト --- */
-  main { 
-    position: relative; 
-    z-index: 10; 
-  }
+  main { position: relative; z-index: 10; }
   .container { margin: 0 auto; width: 92%; max-width: 1000px; }
   h1 { font-family: "Yu Mincho", "Hiragino Mincho ProN", serif; font-weight: 600; }
   h2, h3 { font-family: "Yu Mincho", "Hiragino Mincho ProN", serif; font-weight:bold; margin-bottom: 10px; }
@@ -253,7 +246,9 @@
   #contact-form { display: flex; flex-direction: column; gap: 20px; }
   .form-group { position: relative; }
   
-  /* フォーム入力欄 */
+  /* ====================================================
+     フォームの「書きやすさ」向上＆キーボード対策
+     ==================================================== */
   .form-group input, 
   .form-group textarea {
     background: rgba(255, 255, 255, 0.05); 
@@ -261,10 +256,26 @@
     border-radius: 8px; 
     padding: 22px 12px 8px 12px; 
     color: #fff; 
-    font-size: 1rem; 
+    /* iOSの勝手なズーム拡大を防止（16px固定） */
+    font-size: 16px !important; 
     width: 100%;
     position: relative;
     z-index: 20;
+    transition: all 0.3s ease; 
+  }
+
+  /* タップ（入力）している項目を光らせて目立たせる */
+  .form-group input:focus, 
+  .form-group textarea:focus {
+    outline: none;
+    background: rgba(255, 255, 255, 0.15); 
+    border-color: var(--accent-color); 
+    box-shadow: 0 0 10px rgba(90, 190, 230, 0.3); 
+  }
+
+  /* 内容欄（textarea）をタップ時に広く展開する */
+  .form-group textarea:focus {
+    height: 250px; 
   }
 
   .form-group label {
@@ -521,6 +532,26 @@
           document.documentElement.style.scrollSnapType = 'y mandatory';
         }, 800);
       }
+    });
+  });
+
+  // --- スマホのキーボード出現時のバタつき防止対策 ---
+  const formInputs = document.querySelectorAll('#contact-form input, #contact-form textarea');
+  
+  formInputs.forEach(input => {
+    input.addEventListener('focus', () => {
+      // スクロールスナップを解除（強制スクロールを防ぐ）
+      document.documentElement.style.scrollSnapType = 'none';
+      // LINEボタンを隠すクラスを付与
+      document.body.classList.add('is-form-focused');
+    });
+
+    input.addEventListener('blur', () => {
+      // キーボードが引っ込む時間を考慮し、少し遅れて元に戻す
+      setTimeout(() => {
+        document.documentElement.style.scrollSnapType = 'y mandatory';
+        document.body.classList.remove('is-form-focused');
+      }, 300);
     });
   });
 
