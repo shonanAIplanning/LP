@@ -33,7 +33,6 @@
     overscroll-behavior-y: none;
   }
 
-  /* --- 背景画像の固定（隙間解消版） --- */
   .bg-fixed {
     position: fixed;
     top: 0; left: 0; right: 0; bottom: 0;
@@ -57,8 +56,9 @@
     top: 0; left: 0; width: 100%;
     z-index: 1000;
     transition: opacity 0.4s ease, transform 0.4s ease;
+    pointer-events: none; 
   }
-  .header-hidden { opacity: 0; transform: translateY(-20px); pointer-events: none; }
+  .header-hidden { opacity: 0; transform: translateY(-20px); }
   
   .logo-area {
     padding: 0px 0 5px 0;
@@ -68,6 +68,7 @@
     font-size: 0.8rem; font-weight: bold;
     color: #fff; text-decoration: none; letter-spacing: 0;
     transform: translate(0px, -80px);
+    pointer-events: auto; 
   }
 
   .logo-image { 
@@ -84,13 +85,14 @@
     transform: translateY(-90px); 
   }
 
-  /* --- LINEリンクのスタイル（正円・ヒーロー右下配置） --- */
-.hero-line-link {
-  position: absolute;
-  /* 変更：topとleftを削除し、bottomとrightで右下を指定 */
-  bottom: 5vh;  /* h1下の余白空間に配置（環境に合わせて数値を微調整してください） */
-  right: 10px;  /* コンテナの右端に合わせる */
-  z-index: 10;
+  /* ====================================================
+     LINEリンク：遅延フェードイン＆高さ調整の最終版
+     ==================================================== */
+  #global-line-btn {
+    position: fixed;
+    right: max(4vw, calc(50vw - 500px + 10px));
+    z-index: 2000; 
+    
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -109,40 +111,49 @@
     backdrop-filter: blur(4px);
     -webkit-backdrop-filter: blur(4px);
     
-    /* 状態A：非表示 */
+    /* 初期状態（見えない状態） */
     opacity: 0;
-  visibility: hidden;
-  /* 変更：下に10px下げつつ、右斜め上（-10度）に傾けておく */
-  transform: translateY(10px) rotate(-10deg); 
-  
-  transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.25, 1, 0.5, 1), visibility 0.8s, background-color 0.3s ease, border-color 0.3s ease;
-}
+    visibility: hidden;
+    top: 85vh; 
+    transform: rotate(-20deg);
+    
+    /* 消える時のアニメーション（遅延なしでスーッと消える） */
+    transition: top 0.8s cubic-bezier(0.65, 0, 0.35, 1), transform 0.3s ease, opacity 0.4s ease, visibility 0.4s;
+  }
 
-  /* 2. 【状態B】画面に入った時の状態 */
-.hero-line-link.is-active {
-  opacity: 1;
-  visibility: visible;
-  /* 変更：定位置に戻しても、傾き（-10度）は維持する */
-  transform: translateY(0) rotate(-20deg);
-  transition-delay: 0.5s;
-}
+  /* ★ 表示条件：Hero または Concept セクションにいる時のみ ★ */
+  body[data-active-section="sec-hero"] #global-line-btn,
+  body[data-active-section="sec-concept"] #global-line-btn {
+    opacity: 1;
+    visibility: visible;
+    /* 現れる時のアニメーション：opacityとvisibilityにのみ 0.5s の遅延(delay)をかける */
+    transition: top 0.8s cubic-bezier(0.65, 0, 0.35, 1), transform 0.3s ease, opacity 0.8s ease 0.5s, visibility 0s 0.5s;
+  }
 
-  .hero-line-link.is-active:hover {
+  /* 【状態1】Heroセクション時の位置 */
+  body[data-active-section="sec-hero"] #global-line-btn {
+    top: 75vh; 
+  }
+
+  /* 【状態2】Conceptセクション時の位置 */
+  body[data-active-section="sec-concept"] #global-line-btn {
+    top: 90px; /* ★ここで Concept での高さを調整しています（数値を小さくするほど上に行きます） */
+  }
+
+  /* ホバー時：傾きゼロ＆拡大（移動アニメーションが上書きされないように維持） */
+  #global-line-btn:hover {
+    transform: scale(1.05) rotate(0deg) !important;
     background-color: rgba(255, 255, 255, 1);
-    border-color: rgba(6, 199, 85, 0.8);
-    transform: scale(1.05);
-    transition: all 0.3s ease; 
+    transition: top 0.8s cubic-bezier(0.65, 0, 0.35, 1), transform 0.3s ease, background-color 0.3s ease !important;
   }
 
-  main {
-    position: relative;
-    z-index: 10;
-  }
+
+  /* --- 以下、既存のレイアウト --- */
+  main { position: relative; z-index: 10; }
   .container { margin: 0 auto; width: 92%; max-width: 1000px; }
   h1 { font-family: "Yu Mincho", "Hiragino Mincho ProN", serif; font-weight: 600; }
   h2, h3 { font-family: "Yu Mincho", "Hiragino Mincho ProN", serif; font-weight:bold; margin-bottom: 10px; }
 
-  /* --- 1ページスクロール（スナップ）用共通クラス --- */
   .snap-section {
     scroll-snap-align: start; 
     min-height: 100vh;        
@@ -152,16 +163,9 @@
     padding: 80px 0;          
   }
 
-  .hero-block { 
-    padding-top: var(--initial-gap-pc); 
-    padding-bottom: 0;
-  }
-  
-  .contact-section {
-    padding-bottom: calc(80px + var(--footer-height));
-  }
+  .hero-block { padding-top: var(--initial-gap-pc); padding-bottom: 0; }
+  .contact-section { padding-bottom: calc(80px + var(--footer-height)); }
 
-  /* --- 文字背景の密着とマーカー化の指定 --- */
   .hero-block h1 {
     background: none;
     backdrop-filter: none;
@@ -175,20 +179,21 @@
     max-width: 100%;
   }
 
- backdrop-filter: blur(4px);
+  .service-list {
+    background-color: rgba(107, 108, 107, 0.7);
+    backdrop-filter: blur(4px);
     -webkit-backdrop-filter: blur(4px);
     display: table; 
     padding: 6px 8px;
     margin: 0;
     line-height: 1.3;
-    border-radius: 8px;}
-
+    border-radius: 8px;
+  }
 
   .service-item h3,
   .service-item p,
   .card p {
-
-     background-color: rgba(28, 28, 28, 0.678);
+    background-color: rgba(28, 28, 28, 0.678);
     backdrop-filter: blur(4px);
     -webkit-backdrop-filter: blur(4px);
     display: table; 
@@ -198,7 +203,6 @@
     border-radius: 0;
   }
 
-  /* --- 分離したステートメントクラス（Concept と Declarations） --- */
   .concept-statement,
   .decl-statement {
     background-color: rgba(0, 0, 0, 0.45);
@@ -209,41 +213,23 @@
     max-width: 100%;
   }
 
-  .concept-statement {
-    margin-top: -15vh; 
-    margin-bottom: 15vh; 
-  }
-
-  .decl-statement {
-    margin-top: -20vh; 
-    margin-bottom: 5%; 
-  }
+  .concept-statement { margin-top: -15vh; margin-bottom: 15vh; }
+  .decl-statement { margin-top: -20vh; margin-bottom: 5%; }
 
   .concept-statement h1,
   .concept-statement p,
   .decl-statement h1,
-  .decl-statement p {
-    background: none;
-    backdrop-filter: none;
-    display: block;
-    margin: 0;
-  }
+  .decl-statement p { background: none; backdrop-filter: none; display: block; margin: 0; }
   .concept-statement h1,
   .decl-statement h1 { margin-bottom: 15px; font-size: 2rem; }
-  
   .concept-statement p,
   .decl-statement p { line-height: 1.8; }
 
-  /* --- サービス一覧 --- */
   .service-item h3 { color: var(--accent-color); font-size: 1.3rem; }
-  .service-list { 
-    display: flex; flex-direction: column; gap: 40px; 
-    margin-top: -10vh;
-  }
+  .service-list { display: flex; flex-direction: column; gap: 40px; margin-top: -10vh; }
   .card-stack { display: flex; flex-direction: column; gap: 30px; }
   .card { border-left: 4px solid var(--accent-color); padding-left: 15px; }
 
-  /* --- お問い合わせセクション --- */
   .contact-box {
     background-color: rgba(0, 0, 0, 0.45);
     backdrop-filter: blur(12px);
@@ -286,9 +272,7 @@
     color: rgba(255, 255, 255, 0.7); line-height: 1.5; margin-bottom: 10px;
   }
 
-  .form-actions {
-    display: flex; align-items: center; justify-content: space-between; gap: 20px;
-  }
+  .form-actions { display: flex; align-items: center; justify-content: space-between; gap: 20px; }
   .checkbox-group { display: flex; align-items: center; gap: 10px; font-size: 0.85rem; cursor: pointer; flex: 1; }
   
   #submit-btn {
@@ -297,13 +281,8 @@
     font-weight: bold; cursor: pointer; border-radius: 8px;
     transition: 0.3s; white-space: nowrap;
   }
-  #submit-btn:disabled {
-    background-color: #555;
-    opacity: 0.6;
-    cursor: not-allowed;
-  }
+  #submit-btn:disabled { background-color: #555; opacity: 0.6; cursor: not-allowed; }
 
-  /* --- 右側ドットナビゲーション --- */
   .side-nav {
     position: fixed;
     top: 50%;
@@ -322,10 +301,7 @@
     transition: background-color 0.3s, transform 0.3s;
     text-decoration: none;
   }
-  .dot.active {
-    background-color: var(--footer-green);
-    transform: scale(1.3);
-  }
+  .dot.active { background-color: var(--footer-green); transform: scale(1.3); }
 
   @media (max-width: 600px) {
     .concept-statement { margin-top: 35vh; }
@@ -351,9 +327,12 @@
       <img src="images/saiplogo.png" alt="湘南AI企画ロゴ" class="logo-image">
       <span class="logo-text">Shonan AI Planning</span>
     </a>
-    
   </div>
 </header>
+
+<a href="https://lin.ee/W130DSz" id="global-line-btn" target="_blank" rel="noopener">
+  LINEで<br>お得な<br>地球情報を<br>配信中！
+</a>
 
 <nav class="side-nav">
   <a href="#sec-hero" class="dot active" aria-label="Top"></a>
@@ -365,12 +344,8 @@
 
 <main>
   <section id="sec-hero" class="hero-block snap-section">
-    <div class="container" style="position: relative;">
+    <div class="container">
       <h1>働く現場に、<br>最適をデザイン。</h1>
-      
-      <a href="https://lin.ee/W130DSz" class="hero-line-link" target="_blank" rel="noopener">
-        LINEで<br>お得な<br>地球情報を<br>配信中！
-      </a>
     </div>
   </section>
 
@@ -396,16 +371,12 @@
           <h3>ロゴマーク作成</h3>
           <p>事業の哲学を体現する「ロゴマーク」を作成いたします。<br><span style="color:red; background:none;">※この作業ではAIを一切使用しません</span></p>
         </div> 
-
         <div class="service-item">
           <h3>動画作成</h3>
           <p>SNS広告戦力に欠かせない「PR動画」を作成いたします。</p>
         </div>
-
- 
         
         <div class="service-item">
-
           <h3>それAIかも？！</h3>
           <p>その時々に最適な判断を。AIツール選定から業務への定着まで、仕組み作りを伴走します。ぜひ一度、ご相談ください。</p>
         </div>
@@ -471,7 +442,6 @@
 </footer>
 
 <script>
-  // --- スクロール位置のパニック対策 ---
   if ('scrollRestoration' in history) {
     history.scrollRestoration = 'manual';
   }
@@ -485,7 +455,6 @@
   const btn = document.getElementById('submit-btn');
   const check = document.getElementById('policy-check');
 
-  // 背景の明るさ管理
   const updateOverlay = () => {
     const scrollY = window.scrollY;
     const scrollMax = document.documentElement.scrollHeight - window.innerHeight;
@@ -507,36 +476,24 @@
     check.addEventListener('change', () => { btn.disabled = !check.checked; });
   }
 
-  // --- ナビゲーション監視処理 ＆ ヘッダー・LINEリンク表示制御 ---
   const sections = document.querySelectorAll('.snap-section');
   const navDots = document.querySelectorAll('.dot');
-  const lineLink = document.querySelector('.hero-line-link');
 
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
-      const id = entry.target.getAttribute('id');
-      
       if (entry.isIntersecting) {
-        // 1. ナビのドット更新
+        const id = entry.target.getAttribute('id');
+        
+        document.body.setAttribute('data-active-section', id);
+
         navDots.forEach(dot => {
           dot.classList.toggle('active', dot.getAttribute('href') === `#${id}`);
         });
 
-        // 2. ヘッダー（ロゴ）の表示制御
         if (id === 'sec-hero' || id === 'sec-concept' || id === 'sec-decl') {
           header.classList.remove('header-hidden');
         } else {
           header.classList.add('header-hidden');
-        }
-
-        // 3. LINEリンクの表示（TransitionスイッチON）
-        if (id === 'sec-hero' && lineLink) {
-          lineLink.classList.add('is-active');
-        }
-      } else {
-        // セクションから外れたら戻す（TransitionスイッチOFF）
-        if (id === 'sec-hero' && lineLink) {
-          lineLink.classList.remove('is-active');
         }
       }
     });
@@ -544,7 +501,6 @@
 
   sections.forEach(section => observer.observe(section));
 
-  // --- Safari用 スムーススクロール制御 ---
   navDots.forEach(dot => {
     dot.addEventListener('click', (e) => {
       e.preventDefault();
@@ -562,7 +518,6 @@
     });
   });
 
-  // --- フォーム送信処理 ---
   const form = document.getElementById('contact-form');
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
