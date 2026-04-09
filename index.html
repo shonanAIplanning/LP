@@ -145,14 +145,16 @@
 
 
   /* --- 以下、既存のレイアウト --- */
-  main { position: relative; z-index: 10; }
+  main { position: relative; z-index: 10; pointer-events: auto; }
   .container { margin: 0 auto; width: 92%; max-width: 1000px; }
   h1 { font-family: "Yu Mincho", "Hiragino Mincho ProN", serif; font-weight: 600; }
   h2, h3 { font-family: "Yu Mincho", "Hiragino Mincho ProN", serif; font-weight:bold; margin-bottom: 10px; }
 
   .snap-section {
     scroll-snap-align: start; 
+    /* 最新モバイルブラウザの高さ変動に強い100dvhを追加しつつ互換性の100vhを残す */
     min-height: 100vh;        
+    min-height: 100dvh;
     display: flex;
     flex-direction: column;
     justify-content: center;  
@@ -535,19 +537,33 @@
     });
   });
 
-  // --- スマホのキーボード出現時のバタつき防止対策 ---
+  // =========================================================================
+  // ★重要：スマホのキーボード出現時のバタつき ＆ Googleアプリジャンプバグ対策
+  // =========================================================================
   const formInputs = document.querySelectorAll('#contact-form input, #contact-form textarea');
   
   formInputs.forEach(input => {
-    input.addEventListener('focus', () => {
-      // スクロールスナップを解除（強制スクロールを防ぐ）
+    input.addEventListener('focus', (e) => {
+      // 1. Googleアプリ対策：タップした瞬間のスクロール位置を記憶
+      const currentY = window.scrollY;
+      
+      // 2. スナップ解除（Googleアプリはここでバグって一番上に飛ぼうとする）
       document.documentElement.style.scrollSnapType = 'none';
-      // LINEボタンを隠すクラスを付与
+      
+      // 3. Googleアプリ対策：バグを打ち消し、強制的に元の位置へ戻して画面ジャンプを防ぐ
+      window.scrollTo(0, currentY);
+      
+      // 4. LINEボタンを隠す
       document.body.classList.add('is-form-focused');
+
+      // 5. キーボードが展開し終わる頃に、入力欄を画面の「ど真ん中」へスクロールさせる（究極の書きやすさ）
+      setTimeout(() => {
+        e.target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 300);
     });
 
     input.addEventListener('blur', () => {
-      // キーボードが引っ込む時間を考慮し、少し遅れて元に戻す
+      // 入力が終わったら少し遅れてスナップ機能とLINEボタンを復活させる
       setTimeout(() => {
         document.documentElement.style.scrollSnapType = 'y mandatory';
         document.body.classList.remove('is-form-focused');
