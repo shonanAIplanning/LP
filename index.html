@@ -51,14 +51,24 @@
     transition: background-color 0.1s linear;
   }
 
+  /* ====================================================
+     ヘッダー修正：透明時にクリック判定を完全に消滅させる
+     ==================================================== */
   header {
     position: fixed;
     top: 0; left: 0; width: 100%;
     z-index: 1000;
-    transition: opacity 0.4s ease, transform 0.4s ease;
+    /* visibilityの遷移も追加して滑らかに消す */
+    transition: opacity 0.4s ease, transform 0.4s ease, visibility 0.4s;
     pointer-events: none; 
   }
-  .header-hidden { opacity: 0; transform: translateY(-20px); }
+
+  .header-hidden { 
+    opacity: 0; 
+    transform: translateY(-20px); 
+    /* ★超重要：ここが原因でした。透明になったら「物理的に触れなくする」設定を追加 */
+    visibility: hidden; 
+  }
   
   .logo-area {
     padding: 0px 0 5px 0;
@@ -68,10 +78,11 @@
     font-size: 0.8rem; font-weight: bold;
     color: #fff; text-decoration: none; letter-spacing: 0;
     transform: translate(0px, -80px);
-    pointer-events: auto; 
+    pointer-events: auto; /* ロゴはクリック可能 */
   }
 
   .logo-image { 
+    /* この巨大な高さを持つ画像が下敷きになっていました */
     height: 16.5rem;
     width: auto; 
     margin-right: 0px; 
@@ -86,7 +97,7 @@
   }
 
   /* ====================================================
-     LINEリンク：遅延フェードイン＆高さ調整の最終版
+     LINEリンク：遅延フェードイン
      ==================================================== */
   #global-line-btn {
     position: fixed;
@@ -111,36 +122,25 @@
     backdrop-filter: blur(4px);
     -webkit-backdrop-filter: blur(4px);
     
-    /* 初期状態（見えない状態） */
     opacity: 0;
     visibility: hidden;
     top: 85vh; 
     transform: rotate(-20deg);
     
-    /* 消える時のアニメーション（遅延なしでスーッと消える） */
     transition: top 0.8s cubic-bezier(0.65, 0, 0.35, 1), transform 0.3s ease, opacity 0.4s ease, visibility 0.4s;
+    pointer-events: auto;
   }
 
-  /* ★ 表示条件：Hero または Concept セクションにいる時のみ ★ */
   body[data-active-section="sec-hero"] #global-line-btn,
   body[data-active-section="sec-concept"] #global-line-btn {
     opacity: 1;
     visibility: visible;
-    /* 現れる時のアニメーション：opacityとvisibilityにのみ 0.5s の遅延(delay)をかける */
     transition: top 0.8s cubic-bezier(0.65, 0, 0.35, 1), transform 0.3s ease, opacity 0.8s ease 0.5s, visibility 0s 0.5s;
   }
 
-  /* 【状態1】Heroセクション時の位置 */
-  body[data-active-section="sec-hero"] #global-line-btn {
-    top: 75vh; 
-  }
+  body[data-active-section="sec-hero"] #global-line-btn { top: 75vh; }
+  body[data-active-section="sec-concept"] #global-line-btn { top: 90px; }
 
-  /* 【状態2】Conceptセクション時の位置 */
-  body[data-active-section="sec-concept"] #global-line-btn {
-    top: 90px; /* ★ここで Concept での高さを調整しています（数値を小さくするほど上に行きます） */
-  }
-
-  /* ホバー時：傾きゼロ＆拡大（移動アニメーションが上書きされないように維持） */
   #global-line-btn:hover {
     transform: scale(1.05) rotate(0deg) !important;
     background-color: rgba(255, 255, 255, 1);
@@ -149,7 +149,10 @@
 
 
   /* --- 以下、既存のレイアウト --- */
-  main { position: relative; z-index: 10; }
+  main { 
+    position: relative; 
+    z-index: 10; 
+  }
   .container { margin: 0 auto; width: 92%; max-width: 1000px; }
   h1 { font-family: "Yu Mincho", "Hiragino Mincho ProN", serif; font-weight: 600; }
   h2, h3 { font-family: "Yu Mincho", "Hiragino Mincho ProN", serif; font-weight:bold; margin-bottom: 10px; }
@@ -250,6 +253,7 @@
   #contact-form { display: flex; flex-direction: column; gap: 20px; }
   .form-group { position: relative; }
   
+  /* フォーム入力欄 */
   .form-group input, 
   .form-group textarea {
     background: rgba(255, 255, 255, 0.05); 
@@ -259,6 +263,8 @@
     color: #fff; 
     font-size: 1rem; 
     width: 100%;
+    position: relative;
+    z-index: 20;
   }
 
   .form-group label {
