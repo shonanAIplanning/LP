@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>湘南AI企画</title>
 
+<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
 <style>
   :root {
     --primary-color: #ffffff;
@@ -51,7 +53,6 @@
     transition: background-color 0.1s linear;
   }
 
-  /* ヘッダー修正：透明時にクリック判定を完全に消滅させる */
   header {
     position: fixed;
     top: 0; left: 0; width: 100%;
@@ -90,7 +91,6 @@
     transform: translateY(-90px); 
   }
 
-  /* LINEリンク：遅延フェードイン */
   #global-line-btn {
     position: fixed;
     right: max(4vw, calc(50vw - 500px + 10px));
@@ -136,15 +136,12 @@
     transition: top 0.8s cubic-bezier(0.65, 0, 0.35, 1), transform 0.3s ease, background-color 0.3s ease !important;
   }
 
-  /* フォーム入力中のキーボード対策（LINEボタンを隠す） */
   body.is-form-focused #global-line-btn {
     opacity: 0 !important;
     visibility: hidden !important;
     pointer-events: none !important;
   }
 
-
-  /* --- 以下、既存のレイアウト --- */
   main { position: relative; z-index: 10; pointer-events: auto; }
   .container { margin: 0 auto; width: 92%; max-width: 1000px; }
   h1 { font-family: "Yu Mincho", "Hiragino Mincho ProN", serif; font-weight: 600; }
@@ -152,7 +149,6 @@
 
   .snap-section {
     scroll-snap-align: start; 
-    /* 最新モバイルブラウザの高さ変動に強い100dvhを追加しつつ互換性の100vhを残す */
     min-height: 100vh;        
     min-height: 100dvh;
     display: flex;
@@ -165,27 +161,27 @@
   .contact-section { padding-bottom: calc(80px + var(--footer-height)); }
 
   .hero-block h1 {
-    background: none;
-    backdrop-filter: none;
-    display: block;
-    margin: 0;
-    line-height: 1.4;
-    font-size: clamp(1.8rem, 5vw, 2.8rem);
-    margin-top: 25vh; 
-    margin-bottom: 15vh; 
-    width: fit-content;
-    max-width: 100%;
-  }
+  background: none;
+  backdrop-filter: none;
+  display: block;
+  margin: 25vh auto 15vh 0; /* ← 左側の余白を 0 に変更 */
+  line-height: 1.4;
+  font-size: clamp(1.8rem, 5vw, 2.8rem);
+  width: fit-content;
+  max-width: 100%;
+}
 
+  /* 【修正】左右マージンをautoにして中央寄せ */
   .service-list {
     background-color: rgba(107, 108, 107, 0.7);
     backdrop-filter: blur(4px);
     -webkit-backdrop-filter: blur(4px);
     width: fit-content; 
-  　display: block; /* tableよりも管理しやすい */
-    padding: 6px 8px;
-    margin: 0;
-    line-height: 1.3;
+    display: grid; 
+    grid-template-columns: repeat(2, 1fr); /* ここで2列に指定 */
+    gap: 40px 60px; /* 縦の隙間40px、横の隙間60px */
+    padding: 24px 32px;
+    margin: -10vh auto 0 auto; 
     border-radius: 8px;
   }
 
@@ -202,7 +198,7 @@
     border-radius: 0;
   }
 
-  .concept-statement,
+  /* ▼ 宣言（AIの使用について）を【天地・左右の完全な中央】に配置 ▼ */
   .decl-statement {
     background-color: rgba(0, 0, 0, 0.45);
     backdrop-filter: blur(4px);
@@ -210,48 +206,223 @@
     padding: 24px;
     width: fit-content;
     max-width: 100%;
+    /* 左右を auto にすることで、横方向も完全にド真ん中になります */
+    margin: 0 auto;
+  }
+  .decl-statement h2 { margin: 0 0 15px 0; font-size: 2rem; background: none; display: block; }
+  .decl-statement p { margin: 0; line-height: 1.8; background: none; display: block; }
+  
+  /* ▼ コンセプトはブロックを消して「文字だけ」でさりげなく ▼ */
+  /* ブロックを解除し、文字のみで左下へ配置 */
+  .concept-statement {
+    background: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    padding: 0;
+    width: fit-content;
+    max-width: 100%;
+    margin: 35vh auto 10vh 0; /* 左寄せ(0)・下部配置 */
   }
 
-  .concept-statement { margin-top: -15vh; margin-bottom: 15vh; }
-  .decl-statement { margin-top: -20vh; margin-bottom: 5%; }
+  .concept-statement h2,
+  .concept-statement p {
+    background: none;
+    display: block;
+    margin: 0;
+    /* 背景画像に溶けないよう文字に影をつける */
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 1), 0 0 20px rgba(0, 0, 0, 0.8);
+  }
 
-  .concept-statement h1,
-  .concept-statement p,
-  .decl-statement h1,
-  .decl-statement p { background: none; backdrop-filter: none; display: block; margin: 0; }
-  .concept-statement h1,
-  .decl-statement h1 { margin-bottom: 15px; font-size: 2rem; }
-  .concept-statement p,
-  .decl-statement p { line-height: 1.8; }
+  .concept-statement h2 {
+    margin-bottom: 15px; 
+    font-size: 2rem; 
+    color: var(--accent-color);
+  }
 
+  .concept-statement p {
+    line-height: 2.2; 
+  }
   .service-item h3 { color: var(--accent-color); font-size: 1.3rem; }
-  .service-list { display: flex; flex-direction: column; gap: 40px; margin-top: -10vh; }
   .card-stack { display: flex; flex-direction: column; gap: 30px; }
   .card { border-left: 4px solid var(--accent-color); padding-left: 15px; }
 
+  /* ポートフォリオ用 追加CSS */
+  .portfolio-box {
+    background-color: rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    padding: 30px;
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+  .portfolio-box h2 {
+    color: var(--accent-color);
+    margin-bottom: 10px;
+    font-size: clamp(1.4rem, 4vw, 1.8rem);
+    text-align: center;
+  }
+
+
+  .portfolio-box p {
+    color: white;
+    margin-bottom: 20px;
+    font-size: 1rem;
+  }
+
+  .portfolio-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 15px;
+    max-height: 55vh; 
+    overflow-y: auto;
+    padding-right: 10px;
+  }
+  .portfolio-grid::-webkit-scrollbar { width: 6px; }
+  .portfolio-grid::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); border-radius: 4px; }
+  .portfolio-grid::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.3); border-radius: 4px; }
+  
+  .portfolio-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    flex-direction: column;
+  }
+  .portfolio-card:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--accent-color);
+    transform: translateY(-2px);
+  }
+  .portfolio-img {
+    width: 100%;
+    height: 120px;
+    object-fit: contain; 
+    background: #fff; 
+  }
+  .portfolio-content {
+    padding: 10px 12px;
+    flex-grow: 1;
+  }
+  .portfolio-cat {
+    font-size: 0.7rem;
+    color: var(--accent-color);
+    margin-bottom: 4px;
+    font-weight: bold;
+  }
+  .portfolio-title {
+    font-size: 0.95rem;
+    font-weight: bold;
+    line-height: 1.3;
+  }
+
+  /* SPAモーダル用CSS */
+  .modal-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    z-index: 3000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+  }
+  .modal-overlay.open {
+    opacity: 1;
+    visibility: visible;
+  }
+  .modal-content {
+    background: #1a202c;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    width: 100%;
+    max-width: 650px;
+    max-height: 85vh;
+    overflow-y: auto;
+    position: relative;
+    transform: translateY(20px);
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  }
+  .modal-overlay.open .modal-content {
+    transform: translateY(0);
+  }
+  .modal-close {
+    position: absolute;
+    top: 15px; right: 15px;
+    background: rgba(0, 0, 0, 0.6);
+    color: #fff;
+    border: 1px solid rgba(255,255,255,0.2);
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 1.5rem;
+    display: flex; align-items: center; justify-content: center;
+    z-index: 10;
+    transition: background 0.2s;
+  }
+  .modal-close:hover { background: rgba(0,0,0,0.9); }
+  .modal-img-large {
+    width: 100%;
+    height: 250px;
+    object-fit: contain; 
+    background: #fff; 
+  }
+  .modal-body {
+    padding: 24px;
+  }
+  .modal-body h2 {
+    color: #fff;
+    font-size: 1.5rem;
+    margin-bottom: 15px;
+    line-height: 1.4;
+  }
+  .modal-section { margin-bottom: 20px; }
+  .modal-section h4 {
+    color: var(--accent-color);
+    font-size: 0.85rem;
+    margin-bottom: 8px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    padding-bottom: 5px;
+  }
+  .modal-section p {
+    font-size: 0.9rem;
+    line-height: 1.7;
+    color: #d1d5db;
+    white-space: pre-wrap;
+  }
+
+  .contact-section { 
+    padding-bottom: 80px; 
+  }
+/* ▼ お問い合わせブロックの設定 ▼ */
   .contact-box {
     background-color: rgba(0, 0, 0, 0.45);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     padding: 30px;
-    max-width: 800px;
-    margin: -10vh auto 0;
+    /* 上のブロック（ポートフォリオ等）と同じ幅に合わせる */
+    width: 100%;
+    max-width: 1000px;
+    /* 天地・左右の完全な中央に配置 */
+    margin: 0 auto;
     border-radius: 0;
   }
-
   .contact-box h3 {
     display: inline-block;
     color: var(--accent-color);
     margin-bottom: 20px;
     font-size: clamp(1.4rem, 4vw, 1.8rem);
   }
-
   #contact-form { display: flex; flex-direction: column; gap: 20px; }
   .form-group { position: relative; }
-  
-  /* ====================================================
-     フォームの「書きやすさ」向上＆キーボード対策
-     ==================================================== */
   .form-group input, 
   .form-group textarea {
     background: rgba(255, 255, 255, 0.05); 
@@ -259,15 +430,12 @@
     border-radius: 8px; 
     padding: 22px 12px 8px 12px; 
     color: #fff; 
-    /* iOSの勝手なズーム拡大を防止（16px固定） */
     font-size: 16px !important; 
     width: 100%;
     position: relative;
     z-index: 20;
     transition: all 0.3s ease; 
   }
-
-  /* タップ（入力）している項目を光らせて目立たせる */
   .form-group input:focus, 
   .form-group textarea:focus {
     outline: none;
@@ -275,26 +443,18 @@
     border-color: var(--accent-color); 
     box-shadow: 0 0 10px rgba(90, 190, 230, 0.3); 
   }
-
-  /* 内容欄（textarea）をタップ時に広く展開する */
-  .form-group textarea:focus {
-    height: 250px; 
-  }
-
+  .form-group textarea:focus { height: 250px; }
   .form-group label {
     position: absolute; top: 6px; left: 12px; font-size: 0.75rem;
     color: var(--accent-color); font-weight: bold; z-index: 1; pointer-events: none;
   }
-
   .policy-box {
     background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 255, 255, 0.1);
     padding: 15px; border-radius: 4px; font-size: 0.8rem; height: 110px; overflow-y: auto;
     color: rgba(255, 255, 255, 0.7); line-height: 1.5; margin-bottom: 10px;
   }
-
   .form-actions { display: flex; align-items: center; justify-content: space-between; gap: 20px; }
   .checkbox-group { display: flex; align-items: center; gap: 10px; font-size: 0.85rem; cursor: pointer; flex: 1; }
-  
   #submit-btn {
     background-color: var(--accent-color); 
     color: #fff; border: none; padding: 14px 40px;
@@ -324,11 +484,19 @@
   .dot.active { background-color: var(--footer-green); transform: scale(1.3); }
 
   @media (max-width: 600px) {
-    .concept-statement { margin-top: 35vh; }
-    .decl-statement { margin-top: 25vh; }
+    /* 【修正】スマホ時は少し上部に配置（中央寄せの相殺はしない） */
+    .service-list {
+      display: flex;
+      flex-direction: column;
+      gap: 30px;
+      padding: 15px 20px;
+    }
+    .concept-statement { margin: 25vh auto 10vh 0; }
+    .decl-statement { margin: 0 auto; }
     .form-actions { flex-direction: column; align-items: flex-start; }
     #submit-btn { width: 100%; }
-    .contact-box { padding: 20px; }
+    .contact-box, .portfolio-box { padding: 20px; }
+    .portfolio-grid { max-height: 60vh; }
   }
 
   footer { position: fixed; bottom: 0; left: 0; width: 100%; z-index: 200; pointer-events: none; }
@@ -358,6 +526,7 @@
   <a href="#sec-hero" class="dot active" aria-label="Top"></a>
   <a href="#sec-concept" class="dot" aria-label="Concept"></a>
   <a href="#sec-services" class="dot" aria-label="Services"></a>
+  <a href="#sec-portfolio" class="dot" aria-label="Portfolio"></a>
   <a href="#sec-decl" class="dot" aria-label="Declarations"></a>
   <a href="#sec-contact" class="dot" aria-label="Contact"></a>
 </nav>
@@ -395,11 +564,57 @@
           <h3>動画作成</h3>
           <p>SNS広告戦力に欠かせない「PR動画」を作成いたします。</p>
         </div>
-        
         <div class="service-item">
           <h3>それAIかも？！</h3>
           <p>その時々に最適な判断を。<br>ぜひ一度、ご相談ください。</p>
         </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="sec-portfolio" class="portfolio-section snap-section" x-data="portfolioData()">
+    <div class="container">
+      <div class="portfolio-box">
+        <h2>制作例</h2>
+        <br><p>※ロゴデザインにAIは用いません</p>
+        <div class="portfolio-grid">
+          <template x-for="item in items" :key="item.id">
+            <div class="portfolio-card" @click="openModal(item)">
+              <img :src="item.image" :alt="item.title" class="portfolio-img">
+              <div class="portfolio-content">
+                <div class="portfolio-cat" x-text="item.category"></div>
+                <div class="portfolio-title" x-text="item.title"></div>
+              </div>
+            </div>
+          </template>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-overlay" :class="{'open': isModalOpen}" @click.self="closeModal()">
+      <div class="modal-content">
+        <button class="modal-close" @click="closeModal()">&times;</button>
+        <template x-if="activeItem">
+          <div>
+            <img :src="activeItem.image" :alt="activeItem.title" class="modal-img-large">
+            <div class="modal-body">
+              <div class="portfolio-cat" x-text="activeItem.category"></div>
+              <h2 x-text="activeItem.title"></h2>
+              
+              <div class="modal-section">
+                <h4>概要・特徴</h4>
+                <p x-text="activeItem.overview"></p>
+              </div>
+              
+              <template x-if="activeItem.concept">
+                <div class="modal-section">
+                  <h4>提案理由・コンセプト</h4>
+                  <p x-text="activeItem.concept"></p>
+                </div>
+              </template>
+            </div>
+          </div>
+        </template>
       </div>
     </div>
   </section>
@@ -462,6 +677,42 @@
 </footer>
 
 <script>
+  // Alpine.js ポートフォリオデータ
+  function portfolioData() {
+      return {
+          isModalOpen: false,
+          activeItem: null,
+          items: [
+              { id: 1, category: "カラーコンタクトレンズ", title: "glams",image: "logo/glams.jpg", overview: "カラーコンタクトレンズのブランド立ち上げ。\nブランド名: glams (グラムス)", concept: "コンタクトレンズのように少し湾曲させたラインとなっております。" },
+              { id: 2, category: "SNSサイト", title: "PHOTO DAYS", image: "logo/photodays.jpg",overview: "受講生向けの写真投稿SNSのロゴデザイン。写真を「学び」「撮り」、仲間同士で「つながる」場。", concept: "「T」をはさむ「O」を対面する人の顔にみたて、隙間をあけることで開放的なコミュニケーションをイメージ。" },
+              { id: 3, category: "エコたわしショップ", title: "miz'ami",image: "logo/mizuami1.jpg", overview: "洗剤なし、水だけで洗えるアクリルたわしショップ。北欧のテキスタイル風の鮮やかな花のデザイン。", concept: "アクリルたわしのショップとわかるよう、よごれをよく落とせそうな書体を制作させていただきました。" },
+              { id: 4, category: "システム管理", title: "Hinemos",image: "logo/hinemos.jpg", overview: "NTTデータが開発しているOSSの運用管理ツール。24時間自動でシステムを運用。親しみを持てるキャラクター募集。", concept: null },
+              { id: 5, category: "歯科医院", title: "山本歯科クリニック",image: "logo/yamamotodentalclinic.jpg",  overview: "新規開業ロゴ。安っぽくなく品のあるデザイン。平屋でガラスを多く使い、黒や茶色が基調。予防歯科がコンセプト。", concept: "YAMAMOTOのYを歯間にみたて、上部を覆うラインは予防歯科をイメージ致しました。" },
+              { id: 6, category: "設計事務所", title: "株式会社NEST", image: "logo/nest.jpg",overview: "建築の構造設計を行う設計事務所。確固たる技術の裏付けに基づく高付加価値の設計を行う企業体を目指す。", concept: "グリッドで構造設計を抽象化" },
+              { id: 7, category: "エネルギー企業", title: "ASIA ENERGY BANK",image: "logo/aeb.jpg",overview: "再生エネルギーをキーワードに、環境に配慮したエネルギー供給でアジアの未来に貢献する新エネルギー創造企業。", concept: "Aをモチーフに循環・再生をイメージ。四色が多種の再生エネルギーを表現し、バランスの良い供給を体現。" },
+              { id: 8, category: "飲食店", title: "COLTS", image:"logo/colts.jpg",overview: "石釜で焼く本格ナポリピッツァをワンコインで提供。カジュアルリッチでポップなロゴ。ターゲットはトレンドに敏感な女性。", concept: null },
+              { id: 9, category: "ネイルスパ", title: "Nail Spa CARE+DESIGN",image:"logo/nailspadesign.jpg", overview: "植物美容を用いた手脚の本格的ケアを行う「ネイルスパ」。ケアとデザイン両方を重視し本来の美しさを引き出す。", concept: null },
+              { id: 10, category: "輸入商社", title: "日本薪ストーブライフ",image:"logo/niohnmaki.jpg", overview: "フランスの薪ストーブ・暖炉を直接輸入・卸販売。テーマは「炎」で「人の心まで温めたい」。業界で天下を取りたい希望。", concept: "薪ストーブならではの炎の形です。右肩上がりの勢いも表現" },
+              { id: 11, category: "解体会社", title: "株式会社JDM",image:"logo/jdm.jpg", overview: "解体会社設立のロゴ。和風、シンプル。会社名、代表名、解体イメージ。", concept: "「解体」のイメージとして、「力強さ」を訴求するビジュアルを、「拳」をモチーフに表現しました。" },
+              { id: 12, category: "総合不動産業", title: "SUMAU+", image:"logo/sumau.jpg",overview: "「空間」を商材とし、インテリアデザインがメインの業務。シンプルで独立性のあるシンボルマーク＋文字列。", concept: "クライアントの想像が膨らむような自由な空間を想起させるよう、開放的な抜け感をイメージしデザイン" },
+              { id: 13, category: "コンサルティング", title: "アナグマコンサルティング",image:"logo/anaguma.jpg", overview: "経営の「守り」を固め成長をサポートする会社。社名は将棋の「穴熊囲い」由来。「会社にとっての玉＝お金を守る」イメージ。", concept: "「穴の中のから覗く熊の爪が、しっかりと顧客の資産を守る」というイメージを抽象化して制作" },
+              { id: 14, category: "カフェ", title: "TRUSS CAFE", image:"logo/trusscafe.jpg",overview: "建設系企業が運営するカフェ。「コンクリ」と木目を多用した自然との調和がコンセプトのナチュラルな空間。", concept: "トラス構造をイメージし、建設系の企業が運営するカフェとして、ダイナミズムを感じるデザイン" }
+          ],
+          openModal(item) {
+              this.activeItem = item;
+              this.isModalOpen = true;
+              document.documentElement.style.scrollSnapType = 'none'; 
+          },
+          closeModal() {
+              this.isModalOpen = false;
+              setTimeout(() => { 
+                  this.activeItem = null; 
+                  document.documentElement.style.scrollSnapType = 'y mandatory'; 
+              }, 300);
+          }
+      }
+  }
+
   if ('scrollRestoration' in history) {
     history.scrollRestoration = 'manual';
   }
@@ -538,37 +789,20 @@
     });
   });
 
-  // =========================================================================
-  // ★重要：スマホのキーボード出現時のバタつき ＆ Googleアプリジャンプバグ対策
-  // =========================================================================
+
   const formInputs = document.querySelectorAll('#contact-form input, #contact-form textarea');
   
   formInputs.forEach(input => {
     input.addEventListener('focus', (e) => {
-      // 1. Googleアプリ対策：タップした瞬間のスクロール位置を記憶
-      const currentY = window.scrollY;
-      
-      // 2. スナップ解除（Googleアプリはここでバグって一番上に飛ぼうとする）
+      // スクロールスナップ（吸着）だけを解除し、画面は一切動かさない
       document.documentElement.style.scrollSnapType = 'none';
-      
-      // 3. Googleアプリ対策：バグを打ち消し、強制的に元の位置へ戻して画面ジャンプを防ぐ
-      window.scrollTo(0, currentY);
-      
-      // 4. LINEボタンを隠す
       document.body.classList.add('is-form-focused');
-
-      // 5. キーボードが展開し終わる頃に、入力欄を画面の「ど真ん中」へスクロールさせる（究極の書きやすさ）
-      setTimeout(() => {
-        e.target.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }, 300);
     });
 
     input.addEventListener('blur', () => {
-      // 入力が終わったら少し遅れてスナップ機能とLINEボタンを復活させる
-      setTimeout(() => {
-        document.documentElement.style.scrollSnapType = 'y mandatory';
-        document.body.classList.remove('is-form-focused');
-      }, 300);
+      // 入力が終わったらスナップ（吸着）を元に戻す
+      document.documentElement.style.scrollSnapType = 'y mandatory';
+      document.body.classList.remove('is-form-focused');
     });
   });
 
