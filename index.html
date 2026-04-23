@@ -53,6 +53,20 @@
     transition: background-color 0.1s linear;
   }
 
+  /* =========================================================
+     ▼ レイアウト幅の完全固定化（PC用ベース） ▼ 
+     ========================================================= */
+  .container,
+  .contact-box,
+  .portfolio-box,
+  .service-list {
+    width: 1000px;
+    max-width: none; /* 縮むのを完全に防ぐ */
+    margin: 0 auto;
+  }
+  /* ========================================================= */
+
+
   header {
     position: fixed;
     top: 0; left: 0; width: 100%;
@@ -143,7 +157,7 @@
   }
 
   main { position: relative; z-index: 10; pointer-events: auto; }
-  .container { margin: 0 auto; width: 92%; max-width: 1000px; }
+  
   h1 { font-family: "Yu Mincho", "Hiragino Mincho ProN", serif; font-weight: 600; }
   h2, h3 { font-family: "Yu Mincho", "Hiragino Mincho ProN", serif; font-weight:bold; margin-bottom: 10px; }
 
@@ -161,44 +175,92 @@
   .contact-section { padding-bottom: calc(80px + var(--footer-height)); }
 
   .hero-block h1 {
-  background: none;
-  backdrop-filter: none;
-  display: block;
-  margin: 25vh auto 15vh 0; /* ← 左側の余白を 0 に変更 */
-  line-height: 1.4;
-  font-size: clamp(1.8rem, 5vw, 2.8rem);
-  width: fit-content;
-  max-width: 100%;
-}
-
-  /* 【修正】左右マージンをautoにして中央寄せ */
-  .service-list {
-    background-color: rgba(107, 108, 107, 0.7);
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
-    width: fit-content; 
-    display: grid; 
-    grid-template-columns: repeat(2, 1fr); /* ここで2列に指定 */
-    gap: 40px 60px; /* 縦の隙間40px、横の隙間60px */
-    padding: 24px 32px;
-    margin: -10vh auto 0 auto; 
-    border-radius: 8px;
+    background: none;
+    backdrop-filter: none;
+    display: block;
+    margin: 25vh auto 15vh 0; 
+    line-height: 1.4;
+    font-size: clamp(1.8rem, 5vw, 2.8rem);
+    width: fit-content;
+    max-width: 100%;
   }
 
-  .service-item h3,
-  .service-item p,
-  .card p {
-    background-color: rgba(28, 28, 28, 0.678);
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
-    display: table; 
-    padding: 2px 8px;
-    margin: 0;
-    line-height: 1.3;
+  /* ▼ サービスリスト ▼ */
+  .service-list {
+    background: none; 
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    display: grid; 
+    grid-template-columns: repeat(3, 1fr); 
+    gap: 50px; 
+    padding: 0;
+    margin: -10vh auto 0 auto; 
     border-radius: 0;
   }
 
-  /* ▼ 宣言（AIの使用について）を【天地・左右の完全な中央】に配置 ▼ */
+  .service-item {
+    background: transparent; 
+    border: none; 
+    position: relative; 
+    border-radius: 50%;
+    aspect-ratio: 1 / 1;
+    display: flex; 
+    flex-direction: column; 
+    justify-content: center; 
+    align-items: center; 
+    text-align: center;
+    box-sizing: border-box;
+    padding: 8%; 
+    box-shadow: none; 
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    cursor: pointer;
+  }
+
+  .service-item:hover {
+    transform: none; 
+    box-shadow: none;
+    background: transparent;
+  }
+
+  .service-item::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0; 
+    border: 2px solid #fff;
+    border-radius: 50%;
+    pointer-events: none; 
+    animation: border-pulse 3s infinite ease-in-out;
+  }
+
+  @keyframes border-pulse {
+    0%   { transform: scale(0.8); opacity: 0.5; } 
+    50%  { transform: scale(1.05); opacity: 1.0; } 
+    100% { transform: scale(0.8); opacity: 0.5; } 
+  }
+
+  .service-item h3 { 
+    background: none;
+    margin: 0 0 10px 0;
+    display: block;
+    font-size: clamp(1.3rem, 2.5vw, 1.6rem); 
+    color: #fff; 
+    text-shadow: 0 2px 4px rgba(0,0,0,0.8); 
+  }
+  
+  .service-item p { 
+    background: none;
+    margin: 0;
+    display: block;
+    width: 100%; 
+    text-align: left !important; 
+    font-size: clamp(0.9rem, 1.5vw, 1rem); 
+    line-height: 1.5;
+    color: #eee; 
+    text-shadow: 0 1px 3px rgba(0,0,0,0.8); 
+  }
+
+  /* ▼ 宣言（AIの使用について） ▼ */
   .decl-statement {
     background-color: rgba(0, 0, 0, 0.45);
     backdrop-filter: blur(4px);
@@ -206,14 +268,12 @@
     padding: 24px;
     width: fit-content;
     max-width: 100%;
-    /* 左右を auto にすることで、横方向も完全にド真ん中になります */
     margin: 0 auto;
   }
   .decl-statement h2 { margin: 0 0 15px 0; font-size: 2rem; background: none; display: block; }
   .decl-statement p { margin: 0; line-height: 1.8; background: none; display: block; }
   
-  /* ▼ コンセプトはブロックを消して「文字だけ」でさりげなく ▼ */
-  /* ブロックを解除し、文字のみで左下へ配置 */
+  /* ▼ コンセプト ▼ */
   .concept-statement {
     background: none;
     backdrop-filter: none;
@@ -221,7 +281,7 @@
     padding: 0;
     width: fit-content;
     max-width: 100%;
-    margin: 35vh auto 10vh 0; /* 左寄せ(0)・下部配置 */
+    margin: 35vh auto 10vh 0; 
   }
 
   .concept-statement h2,
@@ -229,7 +289,6 @@
     background: none;
     display: block;
     margin: 0;
-    /* 背景画像に溶けないよう文字に影をつける */
     text-shadow: 0 2px 10px rgba(0, 0, 0, 1), 0 0 20px rgba(0, 0, 0, 0.8);
   }
 
@@ -242,18 +301,14 @@
   .concept-statement p {
     line-height: 2.2; 
   }
-  .service-item h3 { color: var(--accent-color); font-size: 1.3rem; }
-  .card-stack { display: flex; flex-direction: column; gap: 30px; }
-  .card { border-left: 4px solid var(--accent-color); padding-left: 15px; }
 
-  /* ポートフォリオ用 追加CSS */
+  /* ▼ ポートフォリオ ▼ */
   .portfolio-box {
     background-color: rgba(0, 0, 0, 0.45);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     padding: 30px;
-    max-width: 1000px;
-    margin: 0 auto;
+    /* widthとmarginは上部の共通設定で制御済 */
   }
   .portfolio-box h2 {
     color: var(--accent-color);
@@ -261,7 +316,6 @@
     font-size: clamp(1.4rem, 4vw, 1.8rem);
     text-align: center;
   }
-
 
   .portfolio-box p {
     color: white;
@@ -318,7 +372,7 @@
     line-height: 1.3;
   }
 
-  /* SPAモーダル用CSS */
+  /* ▼ モーダル ▼ */
   .modal-overlay {
     position: fixed;
     top: 0; left: 0; right: 0; bottom: 0;
@@ -399,21 +453,21 @@
     white-space: pre-wrap;
   }
 
-  .contact-section { 
-    padding-bottom: 80px; 
+  body.modal-is-open .side-nav {
+    pointer-events: none;
+    opacity: 0.3;
+    transition: opacity 0.3s ease;
   }
-/* ▼ お問い合わせブロックの設定 ▼ */
+
+  /* ▼ お問い合わせ ▼ */
+  .contact-section { padding-bottom: 80px; }
   .contact-box {
     background-color: rgba(0, 0, 0, 0.45);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     padding: 30px;
-    /* 上のブロック（ポートフォリオ等）と同じ幅に合わせる */
-    width: 100%;
-    max-width: 1000px;
-    /* 天地・左右の完全な中央に配置 */
-    margin: 0 auto;
     border-radius: 0;
+    /* widthとmarginは上部の共通設定で制御済 */
   }
   .contact-box h3 {
     display: inline-block;
@@ -483,14 +537,51 @@
   }
   .dot.active { background-color: var(--footer-green); transform: scale(1.3); }
 
+  /* =========================================================
+     ▼ タブレット用（画面幅1024px以下）：740px幅にカチッと切り替え ▼ 
+     ========================================================= */
+  @media (max-width: 1024px) {
+    .container,
+    .contact-box,
+    .portfolio-box,
+    .service-list {
+      width: 740px;
+    }
+  }
+
+  /* =========================================================
+     ▼ スマホ用（画面幅600px以下）：100%幅に切り替え ▼ 
+     ========================================================= */
   @media (max-width: 600px) {
-    /* 【修正】スマホ時は少し上部に配置（中央寄せの相殺はしない） */
+    /* ここで幅100%にリセットし、左右に余白を持たせる */
+    .container,
+    .contact-box,
+    .portfolio-box,
+    .service-list {
+      width: 100%;
+      max-width: none;
+      box-sizing: border-box;
+    }
+    
+    .container {
+      padding: 0 15px;
+    }
+
+    /* サービスの丸を縦並びに */
     .service-list {
       display: flex;
       flex-direction: column;
-      gap: 30px;
-      padding: 15px 20px;
+      gap: 15px; 
+      padding: 0;
     }
+    
+    .service-item {
+      width: 75%; 
+      max-width: 260px; 
+      margin: 0 auto;
+      padding: 8%; 
+    }
+
     .concept-statement { margin: 25vh auto 10vh 0; }
     .decl-statement { margin: 0 auto; }
     .form-actions { flex-direction: column; align-items: flex-start; }
@@ -503,6 +594,9 @@
   .footer-tier-top { background-color: var(--accent-color); height: 8px; }
   .footer-tier-bottom { background-color: var(--footer-green); padding: 10px 0; text-align: center; color: #fff; font-size: 0.8rem; font-weight: bold; pointer-events: auto; }
 </style>
+
+
+
 </head>
 <body>
 
@@ -542,8 +636,8 @@
     <div class="container">
       <div class="concept-statement">
         <h2>AIを普通に</h2>
-        <p>私たちがAIを多用するのは、手抜きをするためではありません。<br>
-        AIに向いた作業はAIに任せ、人間のリソースを「設計」と「品質」に100％集中させ、<br>
+        <p>私たちがAIを多用するのは、手抜きをするためではありません。
+        AIに向いた作業はAIに任せ、人間のリソースを「設計」と「品質」に100％集中させ、
         現代に妥当なコストカットを実現します。</p>
       </div>
     </div>
@@ -554,7 +648,7 @@
       <div class="service-list">
         <div class="service-item">
           <h3>Web制作</h3>
-          <p>AIを活用したワークフローにより<br>スピーディに安価にご提供いたします。</p>
+          <p>AIを活用したワークフローによりスピーディに安価にご提供いたします。</p>
         </div>
         <div class="service-item">
           <h3>ロゴマーク作成</h3>
@@ -564,10 +658,7 @@
           <h3>動画作成</h3>
           <p>SNS広告戦力に欠かせない「PR動画」を作成いたします。</p>
         </div>
-        <div class="service-item">
-          <h3>それAIかも？！</h3>
-          <p>その時々に最適な判断を。<br>ぜひ一度、ご相談ください。</p>
-        </div>
+        
       </div>
     </div>
   </section>
@@ -698,13 +789,15 @@
               { id: 13, category: "コンサルティング", title: "アナグマコンサルティング",image:"logo/anaguma.jpg", overview: "経営の「守り」を固め成長をサポートする会社。社名は将棋の「穴熊囲い」由来。「会社にとっての玉＝お金を守る」イメージ。", concept: "「穴の中のから覗く熊の爪が、しっかりと顧客の資産を守る」というイメージを抽象化して制作" },
               { id: 14, category: "カフェ", title: "TRUSS CAFE", image:"logo/trusscafe.jpg",overview: "建設系企業が運営するカフェ。「コンクリ」と木目を多用した自然との調和がコンセプトのナチュラルな空間。", concept: "トラス構造をイメージし、建設系の企業が運営するカフェとして、ダイナミズムを感じるデザイン" }
           ],
-          openModal(item) {
+                   openModal(item) {
               this.activeItem = item;
               this.isModalOpen = true;
               document.documentElement.style.scrollSnapType = 'none'; 
+              document.body.classList.add('modal-is-open'); // クラスを追加
           },
           closeModal() {
               this.isModalOpen = false;
+              document.body.classList.remove('modal-is-open'); // クラスを削除
               setTimeout(() => { 
                   this.activeItem = null; 
                   document.documentElement.style.scrollSnapType = 'y mandatory'; 
