@@ -63,17 +63,33 @@
     margin: 0 auto;
   }
 
+  /* ▼ デフォルトを「非表示」にし、スクロール検知による意図せぬ出現を防ぐ ▼ */
   header {
     position: fixed;
     top: 0; left: 0; width: 100%;
     z-index: 1000;
-    transition: opacity 0.4s ease, transform 0.4s ease, visibility 0.4s;
     pointer-events: none; 
-  }
-  .header-hidden { 
     opacity: 0; 
-    transform: translateY(-20px); 
     visibility: hidden; 
+    transform: translateY(-20px); 
+    transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s; /* 消える時は素早く */
+  }
+
+  /* ▼ トップ画面（sec-hero）にいる時のみ表示（詳細度でJSを上書き） ▼ */
+  body[data-active-section="sec-hero"] header {
+    opacity: 1; 
+    visibility: visible; 
+    transform: translateY(0); 
+    pointer-events: auto; 
+    transition: opacity 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), visibility 0.4s; /* 現れる時は滑らかに */
+  }
+
+  /* JSが付与するクラスより詳細度を高く保つための念押し */
+  body[data-active-section] header.header-hidden {
+    opacity: 0; 
+    visibility: hidden; 
+    transform: translateY(-20px); 
+    pointer-events: none;
   }
   
   /* ▼ ロゴ周りのリセット（被りと見切れを解消） ▼ */
@@ -649,6 +665,10 @@
     .form-actions { flex-direction: column; align-items: flex-start; }
     #submit-btn { width: 100%; }
     .contact-box, .portfolio-box { padding: 20px; }
+     /* ▼ コンタクトセクションの下部にフッターの高さ＋80pxの余白を強制確保 ▼ */
+    .contact-section {
+      padding-bottom: calc(80px + var(--footer-height)); 
+    }
     .portfolio-grid { max-height: 60vh; }
   }
 
