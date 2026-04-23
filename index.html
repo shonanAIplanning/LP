@@ -22,7 +22,8 @@
   * { box-sizing: border-box; margin: 0; padding: 0; }
   
   html {
-    scroll-snap-type: y mandatory;
+   /* mandatory（強制）を proximity（近接時のみ）に変更 */
+    scroll-snap-type: y proximity;
     overscroll-behavior-y: none;
   }
 
